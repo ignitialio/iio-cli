@@ -1,6 +1,6 @@
 # Ignitial.io bootsraper
 
-Creates applicaiton and services bootstrap code based on Ignitial.io framework.
+Creates application and services bootstrap code based on Ignitial.io framework.
 
 ```bash
 $> iio  
@@ -21,4 +21,10 @@ Usage:  [options] <command>
    update [options] <name>    updates library for all child folders. Useful for iio-services update for all services
    build <name1>,...,<nameN>  builds Docker containers for named services
 
+```
+
+# Install
+
+`̀``bash
+npm install -g @ignitial/iio-cli
 ```
