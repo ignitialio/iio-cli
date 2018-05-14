@@ -1,0 +1,32 @@
+{
+  "name": "@ignitial/iio-cli",
+  "version": "1.0.0",
+  "description": "iio application & services project generator",
+  "main": "index.js",
+  "bin": {
+    "iio": "./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/iio-core/iio-cli.git"
+  },
+  "keywords": [
+    "iio",
+    "ignitial.io",
+    "generator",
+    "micro-services",
+    "services",
+    "iios"
+  ],
+  "author": "Victor Andritoiu <devandrito@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "commander": "^2.15.1",
+    "fs-extra": "^3.0.1",
+    "recursive-readdir": "^2.2.1",
+    "replace": "^1.0.0",
+    "rimraf": "^2.6.2",
+    "simple-git": "^1.92.0"
+  }
+}
