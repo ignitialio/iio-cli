@@ -55,7 +55,15 @@ cli
 
           replace({
             regex: 'iiost',
-            replacement: name.toLowerCase(),
+            replacement: loweredName,
+            paths: [ destPath ],
+            recursive: true,
+            silent: true,
+          })
+
+          replace({
+            regex: 'Iiost',
+            replacement: upperedName,
             paths: [ destPath ],
             recursive: true,
             silent: true,
