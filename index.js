@@ -13,7 +13,7 @@ const rimraf = require('rimraf')
 let pckageJSON = fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8')
 let version = JSON.parse(pckageJSON).version
 let appTemplateGitRepo = 'https://gitlab.com/iio-core/iio-app-template.git'
-let srvTemplateGitRepoJS = 'https://gitlab.com/iio-core/iio-srv-template.git'
+let srvTemplateGitRepoJS = 'https://gitlab.com/iio-core/iio-svc-template.git'
 let destPath = '.'
 
 cli
@@ -54,7 +54,7 @@ cli
           }
 
           replace({
-            regex: 'iioat',
+            regex: 'iiost',
             replacement: name.toLowerCase(),
             paths: [ destPath ],
             recursive: true,
