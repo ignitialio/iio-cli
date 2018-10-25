@@ -1,6 +1,6 @@
 {
   "name": "@ignitial/iio-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "iio application & services project generator",
   "main": "index.js",
   "bin": {
@@ -22,11 +22,11 @@
   "license": "MIT",
   "dependencies": {
     "chalk": "^2.4.1",
-    "commander": "^2.15.1",
+    "commander": "^2.19.0",
     "fs-extra": "^3.0.1",
     "recursive-readdir": "^2.2.1",
     "replace": "^1.0.0",
     "rimraf": "^2.6.2",
-    "simple-git": "^1.92.0"
+    "simple-git": "^1.105.0"
   }
 }

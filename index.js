@@ -77,6 +77,14 @@ cli
           silent: true,
         })
 
+        replace({
+          regex: 'IgnitialIO',
+          replacement: name,
+          paths: [ destPath ],
+          recursive: true,
+          silent: true,
+        })
+
         rimraf(path.join(destPath, '.git'), () => {
           console.log('done')
         })
