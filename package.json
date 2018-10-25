@@ -1,6 +1,6 @@
 {
   "name": "@ignitial/iio-cli",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "iio application & services project generator",
   "main": "index.js",
   "bin": {
