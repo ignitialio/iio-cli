@@ -13,6 +13,7 @@ const rimraf = require('rimraf')
 let pckageJSON = fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8')
 let version = JSON.parse(pckageJSON).version
 let appTemplateGitRepo = 'https://gitlab.com/iio-core/iio-app-template.git'
+let desktopTemplateGitRepo = 'https://gitlab.com/iio-core/electron-app-template.git'
 let srvTemplateGitRepoJS = 'https://gitlab.com/iio-core/iio-svc-template.git'
 let destPath = '.'
 
@@ -25,7 +26,7 @@ cli
 
 cli
   .command('create <what> <name>')
-  .description('initialize new iio application or service project')
+  .description('initialize new iio web/desktop application or service project (app|desktop|service)')
   .action(function(what, name) {
     if (what === 'service') {
       destPath = path.join(cli.path || destPath, name + '-service')
@@ -79,6 +80,21 @@ cli
       git.clone(appTemplateGitRepo, destPath, () => {
         replace({
           regex: 'iioat',
+          replacement: name.toLowerCase(),
+          paths: [ destPath ],
+          recursive: true,
+          silent: true,
+        })
+
+        rimraf(path.join(destPath, '.git'), () => {
+          console.log('done')
+        })
+      })
+    } else if (what === 'desktop') {
+      destPath = path.join(cli.path || destPath, name)
+      git.clone(desktopTemplateGitRepo, destPath, () => {
+        replace({
+          regex: 'iioeat',
           replacement: name.toLowerCase(),
           paths: [ destPath ],
           recursive: true,
