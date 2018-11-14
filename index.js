@@ -81,7 +81,7 @@ cli
           // `files` is an array of absolute file paths
           for (let file of files) {
             if (path.basename(file).match('ignitialio')) {
-              fs.move(file, file.replace('ignitialio', loweredName))
+              fs.move(file, file.replace('ignitialio', name.toLowerCase()))
             }
           }
 
@@ -108,7 +108,7 @@ cli
             recursive: true,
             silent: true,
           })
-          
+
           rimraf(path.join(destPath, '.git'), () => {
             console.log('done')
           })
