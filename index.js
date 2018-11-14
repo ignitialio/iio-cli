@@ -77,24 +77,41 @@ cli
     } else if (what === 'app') {
       destPath = path.join(cli.path || destPath, name)
       git.clone(appTemplateGitRepo, destPath, () => {
-        replace({
-          regex: 'iioat',
-          replacement: name.toLowerCase(),
-          paths: [ destPath ],
-          recursive: true,
-          silent: true,
-        })
-
-        replace({
-          regex: 'IgnitialIO',
-          replacement: name,
-          paths: [ destPath ],
-          recursive: true,
-          silent: true,
-        })
-
         rimraf(path.join(destPath, '.git'), () => {
           console.log('done')
+        })
+
+        recursive(destPath, (err, files) => {
+          // `files` is an array of absolute file paths
+          for (let file of files) {
+            if (path.basename(file).match('ignitialio')) {
+              fs.move(file, file.replace('ignitialio', loweredName))
+            }
+          }
+
+          replace({
+            regex: 'iioat',
+            replacement: name.toLowerCase(),
+            paths: [ destPath ],
+            recursive: true,
+            silent: true,
+          })
+  
+          replace({
+            regex: 'IgnitialIO',
+            replacement: name,
+            paths: [ destPath ],
+            recursive: true,
+            silent: true,
+          })
+  
+          replace({
+            regex: 'ignitialio',
+            replacement: name.toLowerCase(),
+            paths: [ destPath ],
+            recursive: true,
+            silent: true,
+          })
         })
       })
     } else {
