@@ -24,8 +24,8 @@ cli
   .option('-l, --lang <language>', 'set programming language: py, js, go')
 
 cli
-  .command('create <what> <name>')
-  .description('initialize new iio application or service project')
+  .command('create <what> <name>')  
+  .description('initialize new iio web/desktop application or service project (app|desktop|service)')
   .action(function(what, name) {
     if (what === 'service') {
       destPath = path.join(cli.path || destPath, name + '-service')
@@ -77,10 +77,6 @@ cli
     } else if (what === 'app') {
       destPath = path.join(cli.path || destPath, name)
       git.clone(appTemplateGitRepo, destPath, () => {
-        rimraf(path.join(destPath, '.git'), () => {
-          console.log('done')
-        })
-
         recursive(destPath, (err, files) => {
           // `files` is an array of absolute file paths
           for (let file of files) {
@@ -112,10 +108,29 @@ cli
             recursive: true,
             silent: true,
           })
+          
+          rimraf(path.join(destPath, '.git'), () => {
+            console.log('done')
+          })
+        })
+      })
+    } else if (what === 'desktop') {
+      destPath = path.join(cli.path || destPath, name)
+      git.clone(desktopTemplateGitRepo, destPath, () => {
+        replace({
+          regex: 'iioeat',
+          replacement: name.toLowerCase(),
+          paths: [ destPath ],
+          recursive: true,
+          silent: true,
+        })
+
+        rimraf(path.join(destPath, '.git'), () => {
+          console.log('done')
         })
       })
     } else {
-      console.log(chalk.red('<what> option must be either "service" or "app"'))
+      console.log(chalk.red('<what> option must be either "service" or "app" or "desktop"'))
     }
   })
 
