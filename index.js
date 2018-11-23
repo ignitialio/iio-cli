@@ -14,6 +14,7 @@ let pckageJSON = fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8')
 let version = JSON.parse(pckageJSON).version
 let appTemplateGitRepo = 'https://gitlab.com/iio-core/iio-app-template.git'
 let srvTemplateGitRepoJS = 'https://gitlab.com/iio-core/iio-svc-template.git'
+let desktopTemplateGitRepo = 'https://gitlab.com/iio-core/electron-app-template.git'
 let destPath = '.'
 
 cli
@@ -24,7 +25,7 @@ cli
   .option('-l, --lang <language>', 'set programming language: py, js, go')
 
 cli
-  .command('create <what> <name>')  
+  .command('create <what> <name>')
   .description('initialize new iio web/desktop application or service project (app|desktop|service)')
   .action(function(what, name) {
     if (what === 'service') {
@@ -92,7 +93,7 @@ cli
             recursive: true,
             silent: true,
           })
-  
+
           replace({
             regex: 'IgnitialIO',
             replacement: name,
@@ -100,7 +101,7 @@ cli
             recursive: true,
             silent: true,
           })
-  
+
           replace({
             regex: 'ignitialio',
             replacement: name.toLowerCase(),
