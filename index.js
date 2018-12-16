@@ -15,6 +15,7 @@ let version = JSON.parse(pckageJSON).version
 let appTemplateGitRepo = 'https://gitlab.com/iio-core/iio-app-template.git'
 let srvTemplateGitRepoJS = 'https://gitlab.com/iio-core/iio-svc-template.git'
 let desktopTemplateGitRepo = 'https://gitlab.com/iio-core/electron-app-template.git'
+let appNxtTemplateGitRepo = 'https://gitlab.com/iio-core/iio-app-nxt.git'
 let destPath = '.'
 
 cli
@@ -23,6 +24,7 @@ cli
   .option('-p, --path <path>', 'set destination directory path. defaults to ./<name>')
   .option('-a, --author <author>', 'set author')
   .option('-l, --lang <language>', 'set programming language: py, js, go')
+  .option('-g, --gen <legacy|next>', 'framework generation (default: next)')
 
 cli
   .command('create <what> <name>')
@@ -76,45 +78,97 @@ cli
         })
       })
     } else if (what === 'app') {
-      destPath = path.join(cli.path || destPath, name)
-      git.clone(appTemplateGitRepo, destPath, () => {
-        recursive(destPath, (err, files) => {
-          // `files` is an array of absolute file paths
-          for (let file of files) {
-            if (path.basename(file).match('ignitialio')) {
-              fs.move(file, file.replace('ignitialio', name.toLowerCase()))
-            }
-          }
+      switch (cli.gen) {
+        case 'legacy':
+          destPath = path.join(cli.path || destPath, name)
+          git.clone(appTemplateGitRepo, destPath, () => {
+            recursive(destPath, (err, files) => {
+              // `files` is an array of absolute file paths
+              for (let file of files) {
+                if (path.basename(file).match('ignitialio')) {
+                  fs.move(file, file.replace('ignitialio', name.toLowerCase()))
+                }
+              }
 
-          replace({
-            regex: 'iioat',
-            replacement: name.toLowerCase(),
-            paths: [ destPath ],
-            recursive: true,
-            silent: true,
-          })
+              replace({
+                regex: 'iioat',
+                replacement: name.toLowerCase(),
+                paths: [ destPath ],
+                recursive: true,
+                silent: true,
+              })
 
-          replace({
-            regex: 'IgnitialIO',
-            replacement: name,
-            paths: [ destPath ],
-            recursive: true,
-            silent: true,
-          })
+              replace({
+                regex: 'IgnitialIO',
+                replacement: name,
+                paths: [ destPath ],
+                recursive: true,
+                silent: true,
+              })
 
-          replace({
-            regex: 'ignitialio',
-            replacement: name.toLowerCase(),
-            paths: [ destPath ],
-            recursive: true,
-            silent: true,
-          })
+              replace({
+                regex: 'ignitialio',
+                replacement: name.toLowerCase(),
+                paths: [ destPath ],
+                recursive: true,
+                silent: true,
+              })
 
-          rimraf(path.join(destPath, '.git'), () => {
-            console.log('done')
+              rimraf(path.join(destPath, '.git'), () => {
+                console.log('done')
+              })
+            })
           })
-        })
-      })
+          break
+        default:
+          destPath = path.join(cli.path || destPath, name)
+          git.clone(appNxtTemplateGitRepo, destPath, () => {
+            recursive(destPath, (err, files) => {
+              // `files` is an array of absolute file paths
+              for (let file of files) {
+                if (path.basename(file).match('ignitialio')) {
+                  fs.move(file, file.replace('ignitialio', name.toLowerCase()))
+                }
+              }
+
+              replace({
+                regex: 'iioat',
+                replacement: name.toLowerCase(),
+                paths: [ destPath ],
+                recursive: true,
+                silent: true,
+              })
+
+              replace({
+                regex: '@ignitial/iio-app-nxt',
+                replacement: name.toLowerCase(),
+                paths: [ destPath ],
+                recursive: true,
+                silent: true,
+              })
+
+              replace({
+                regex: 'IgnitialIO',
+                replacement: name,
+                paths: [ destPath ],
+                recursive: true,
+                silent: true,
+              })
+
+              replace({
+                regex: 'ignitialio',
+                replacement: name.toLowerCase(),
+                paths: [ destPath ],
+                recursive: true,
+                silent: true,
+              })
+
+              rimraf(path.join(destPath, '.git'), () => {
+                console.log('done')
+              })
+            })
+          })
+      }
     } else if (what === 'desktop') {
       destPath = path.join(cli.path || destPath, name)
       git.clone(desktopTemplateGitRepo, destPath, () => {
