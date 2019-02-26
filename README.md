@@ -25,6 +25,6 @@ Usage:  [options] <command>
 
 # Install
 
-`̀``bash
+```bash
 npm install -g @ignitial/iio-cli
 ```
