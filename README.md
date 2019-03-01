@@ -12,7 +12,7 @@ Usage:  [options] <command>
    -v, --version              output the version number
    -p, --path <path>          set destination directory path. defaults to ./<name>
    -a, --author <author>      set author
-   -l, --lang <language>      set programming language: py, js, go
+   -l, --lang <language>      set programming language: py, js (default: js)
    -h, --help                 output usage information
 
  Commands:

@@ -9,21 +9,51 @@ const exec = require('child_process').execSync
 const git = require('simple-git')()
 const replace = require('replace')
 const rimraf = require('rimraf')
+const listDirectories = require('list-directories')
 
 let pckageJSON = fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8')
 let version = JSON.parse(pckageJSON).version
 let appTemplateGitRepo = 'https://gitlab.com/iio-core/iio-app-template.git'
 let srvTemplateGitRepoJS = 'https://gitlab.com/iio-core/iio-svc-template.git'
+let srvTemplateGitRepoPy = 'https://gitlab.com/iio-core/iio-py-svc-template.git'
 let desktopTemplateGitRepo = 'https://gitlab.com/iio-core/electron-app-template.git'
 let appNxtTemplateGitRepo = 'https://gitlab.com/iio-core/iio-app-nxt.git'
 let destPath = '.'
+
+function cleanupAndExit(loweredName, servicePath) {
+  console.log("Creation of service '" + loweredName + "' failed.") 
+  if (servicePath && fs.existsSync(servicePath)) {
+    console.log('Deleting directory', servicePath)
+    fs.removeSync(servicePath)
+  }
+  process.exit(1)
+}
+
+async function renameDirs(dirPath, loweredName, servicePath) {
+  if (path.basename(dirPath).match('.git')) return
+  servicePath = servicePath || dirPath
+  if (path.basename(dirPath).match('iiost')) {
+    let oldDirPath = dirPath
+    dirPath = path.join(path.dirname(oldDirPath), loweredName)
+    if (fs.existsSync(dirPath)) {
+      console.log('ERROR: Cannot recreate existing directory', dirPath,  
+      '\nTry giving your service a different name.')
+      cleanupAndExit(loweredName, servicePath)
+    }
+    fs.moveSync(oldDirPath, dirPath)
+  }
+  let childDirPaths = await listDirectories(dirPath) 
+  for (let childDirPath of childDirPaths.values()) {
+    await renameDirs(childDirPath, loweredName, servicePath)
+  }
+}
 
 cli
   .version(version, '-v, --version')
   .usage('[options] <command>')
   .option('-p, --path <path>', 'set destination directory path. defaults to ./<name>')
   .option('-a, --author <author>', 'set author')
-  .option('-l, --lang <language>', 'set programming language: py, js, go')
+  .option('-l, --lang <language>', 'set programming language: py, js (default: js)')
   .option('-g, --gen <legacy|next>', 'framework generation (default: next)')
 
 cli
@@ -35,7 +65,7 @@ cli
       let srvTemplateGitRepo
       switch (cli.lang) {
         case 'py':
-          srvTemplateGitRepo = srvTemplateGitRepoJS
+          srvTemplateGitRepo = srvTemplateGitRepoPy
           break;
         default:
           srvTemplateGitRepo = srvTemplateGitRepoJS
@@ -43,7 +73,15 @@ cli
       let loweredName = name.toLowerCase()
       let upperedName = loweredName.slice(0,1).toUpperCase() + loweredName.slice(1)
 
-      git.clone(srvTemplateGitRepo, destPath, () => {
+      if (!loweredName.match(/^[a-z]+$/)) {
+        console.log('Service name must only contain letters from a to z or A to Z.')
+        cleanupAndExit(loweredName)
+      }
+
+      git.clone(srvTemplateGitRepo, destPath, async () => {
+
+        await renameDirs(destPath, loweredName)
+
         recursive(destPath, (err, files) => {
           // `files` is an array of absolute file paths
           for (let file of files) {
