@@ -60,6 +60,7 @@ cli
   .command('create <what> <name>')
   .description('initialize new iio web/desktop application or service project (app|desktop|service)')
   .action(function(what, name) {
+    console.log("selected lang: ", cli.lang)
     if (what === 'service') {
       destPath = path.join(cli.path || destPath, name + '-service')
       let srvTemplateGitRepo
