@@ -1,0 +1,17 @@
+js:
+  app:
+    repo: https://gitlab.com/iio-core/iio-app-nxt.git
+  service:
+    repo: https://gitlab.com/iio-core/iio-svc-template.git
+  desktop:
+    repo: https://gitlab.com/iio-core/electron-app-template.git
+  hyperasset:
+    repo: https://gitlab.com/iio-core/iio-app-nxt.git
+    replacements:
+      iioat: 'lowerCaseAppName'
+      '@ignitial/iio-app-nxt': 'lowerCaseAppName'
+      IgnitialIO: 'appName'
+      ignitialio: 'lowerCaseAppName'
+py:
+  service:
+    repo: https://gitlab.com/iio-core/iio-py-svc-template.git

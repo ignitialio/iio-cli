@@ -3,6 +3,7 @@
 const cli = require('commander')
 const chalk = require('chalk')
 const fs = require('fs-extra')
+const yaml = require('yaml')
 const path = require('path')
 const recursive = require('recursive-readdir')
 const exec = require('child_process').execSync
@@ -11,19 +12,38 @@ const replace = require('replace')
 const rimraf = require('rimraf')
 const listDirectories = require('list-directories')
 
-let pckageJSON = fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8')
-let version = JSON.parse(pckageJSON).version
-let appTemplateGitRepo = 'https://gitlab.com/iio-core/iio-app-template.git'
-let srvTemplateGitRepoJS = 'https://gitlab.com/iio-core/iio-svc-template.git'
-let srvTemplateGitRepoPy = 'https://gitlab.com/iio-core/iio-py-svc-template.git'
-let desktopTemplateGitRepo = 'https://gitlab.com/iio-core/electron-app-template.git'
-let appNxtTemplateGitRepo = 'https://gitlab.com/iio-core/iio-app-nxt.git'
+let config = yaml.parse(fs.readFileSync('./config/sample.yaml', 'utf8'))
+
+const cfgPath = path.join('/home', process.env.USER, '.iio')
+if (fs.existsSync(cfgPath)) {
+  config = yaml.parse(fs.readFileSync(cfgPath, 'utf8'))
+  console.log('get config from user file')
+} else {
+  fs.writeFileSync(cfgPath, yaml.stringify(config), 'utf8')
+  console.log('get config from default sample')
+}
+
+let languages = Object.keys(config)
+let bootstrapTypes = [ 'service', 'app', 'desktop' ]
+
+for (let l in config) {
+  for (let t in config[l]) {
+    if (bootstrapTypes.indexOf(t) === -1) {
+      bootstrapTypes.push(t)
+    }
+  }
+}
+
+let bootstrapTypesDescription = bootstrapTypes.join('|')
+let packageDef = fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8')
+let version = JSON.parse(packageDef).version
+
 let destPath = '.'
 
 function cleanupAndExit(loweredName, servicePath) {
-  console.log("Creation of service '" + loweredName + "' failed.") 
+  console.log('creation of service ' + loweredName + ' failed')
   if (servicePath && fs.existsSync(servicePath)) {
-    console.log('Deleting directory', servicePath)
+    console.log('deleting directory', servicePath)
     fs.removeSync(servicePath)
   }
   process.exit(1)
@@ -36,13 +56,13 @@ async function renameDirs(dirPath, loweredName, servicePath) {
     let oldDirPath = dirPath
     dirPath = path.join(path.dirname(oldDirPath), loweredName)
     if (fs.existsSync(dirPath)) {
-      console.log('ERROR: Cannot recreate existing directory', dirPath,  
-      '\nTry giving your service a different name.')
+      console.log('cannot recreate existing directory', dirPath,
+      '\ntry giving your service a different name.')
       cleanupAndExit(loweredName, servicePath)
     }
     fs.moveSync(oldDirPath, dirPath)
   }
-  let childDirPaths = await listDirectories(dirPath) 
+  let childDirPaths = await listDirectories(dirPath)
   for (let childDirPath of childDirPaths.values()) {
     await renameDirs(childDirPath, loweredName, servicePath)
   }
@@ -54,58 +74,138 @@ cli
   .option('-p, --path <path>', 'set destination directory path. defaults to ./<name>')
   .option('-a, --author <author>', 'set author')
   .option('-l, --lang <language>', 'set programming language: py, js (default: js)')
-  .option('-g, --gen <legacy|next>', 'framework generation (default: next)')
 
 cli
   .command('create <what> <name>')
-  .description('initialize new iio web/desktop application or service project (app|desktop|service)')
+  .description('initialize new iio web/desktop application or service project (' + bootstrapTypesDescription + ')')
   .action(function(what, name) {
-    console.log("selected lang: ", cli.lang)
-    if (what === 'service') {
-      destPath = path.join(cli.path || destPath, name + '-service')
-      let srvTemplateGitRepo
-      switch (cli.lang) {
-        case 'py':
-          srvTemplateGitRepo = srvTemplateGitRepoPy
-          break;
-        default:
-          srvTemplateGitRepo = srvTemplateGitRepoJS
-      }
-      let loweredName = name.toLowerCase()
-      let upperedName = loweredName.slice(0,1).toUpperCase() + loweredName.slice(1)
+    cli.lang = cli.lang || 'js'
+    if (languages.indexOf(cli.lang) === -1) {
+      console.log('language ' + cli.lang + ' is not supported. Exiting...')
+      process.exit(1)
+    }
 
-      if (!loweredName.match(/^[a-z]+$/)) {
-        console.log('Service name must only contain letters from a to z or A to Z.')
-        cleanupAndExit(loweredName)
-      }
+    console.log('selected lang: ', cli.lang)
+    let availableBootstraps = Object.keys(config[cli.lang])
+    let currentBootstrapIndex = availableBootstraps.indexOf(what)
+    if (currentBootstrapIndex === -1) {
+      console.log('bootstrap template ' + what + ' is not supported. Exiting...')
+      process.exit(1)
+    }
 
-      git.clone(srvTemplateGitRepo, destPath, async () => {
+    let repo
 
-        await renameDirs(destPath, loweredName)
+    switch (what) {
+      case 'service':
+        destPath = path.join(cli.path || destPath, name + '-service')
+        repo = config[cli.lang].service.repo
 
-        recursive(destPath, (err, files) => {
-          // `files` is an array of absolute file paths
-          for (let file of files) {
-            if (path.basename(file).match('Iiost')) {
-              fs.move(file, file.replace('Iiost', upperedName))
+        let loweredName = name.toLowerCase()
+        let upperedName = loweredName.slice(0,1).toUpperCase() + loweredName.slice(1)
+
+        if (!loweredName.match(/^[a-z]+$/)) {
+          console.log('service name must only contain letters from a to z or A to Z.')
+          cleanupAndExit(loweredName)
+        }
+
+        git.clone(repo, destPath, async () => {
+          await renameDirs(destPath, loweredName)
+
+          recursive(destPath, (err, files) => {
+            // `files` is an array of absolute file paths
+            for (let file of files) {
+              if (path.basename(file).match('Iiost')) {
+                fs.move(file, file.replace('Iiost', upperedName))
+              }
+
+              if (path.basename(file).match('iiost')) {
+                fs.move(file, file.replace('iiost', loweredName))
+              }
             }
 
-            if (path.basename(file).match('iiost')) {
-              fs.move(file, file.replace('iiost', loweredName))
-            }
-          }
+            replace({
+              regex: 'iiost',
+              replacement: loweredName,
+              paths: [ destPath ],
+              recursive: true,
+              silent: true,
+            })
 
-          replace({
-            regex: 'iiost',
-            replacement: loweredName,
-            paths: [ destPath ],
-            recursive: true,
-            silent: true,
+            replace({
+              regex: 'Iiost',
+              replacement: upperedName,
+              paths: [ destPath ],
+              recursive: true,
+              silent: true,
+            })
+
+            rimraf(path.join(destPath, '.git'), () => {
+              console.log('done')
+            })
           })
+        })
+        break
+      case 'app':
+        destPath = path.join(cli.path || destPath, name)
 
+        repo = config[cli.lang].app.repo
+
+        git.clone(repo, destPath, () => {
+          recursive(destPath, (err, files) => {
+            // `files` is an array of absolute file paths
+            for (let file of files) {
+              if (path.basename(file).match('ignitialio')) {
+                fs.move(file, file.replace('ignitialio', name.toLowerCase()))
+              }
+            }
+
+            replace({
+              regex: 'iioat',
+              replacement: name.toLowerCase(),
+              paths: [ destPath ],
+              recursive: true,
+              silent: true,
+            })
+
+            replace({
+              regex: '@ignitial/iio-app-nxt',
+              replacement: name.toLowerCase(),
+              paths: [ destPath ],
+              recursive: true,
+              silent: true,
+            })
+
+            replace({
+              regex: 'IgnitialIO',
+              replacement: name,
+              paths: [ destPath ],
+              recursive: true,
+              silent: true,
+            })
+
+            replace({
+              regex: 'ignitialio',
+              replacement: name.toLowerCase(),
+              paths: [ destPath ],
+              recursive: true,
+              silent: true,
+            })
+
+            rimraf(path.join(destPath, '.git'), () => {
+              console.log('done')
+            })
+          })
+        })
+        break
+      case 'desktop':
+        destPath = path.join(cli.path || destPath, name)
+
+        repo = config[cli.lang].desktop.repo
+
+        git.clone(repo, destPath, () => {
           replace({
-            regex: 'Iiost',
-            replacement: upperedName,
+            regex: 'iioeat',
+            replacement: name.toLowerCase(),
             paths: [ destPath ],
             recursive: true,
             silent: true,
@@ -115,116 +215,40 @@ cli
             console.log('done')
           })
         })
-      })
-    } else if (what === 'app') {
-      switch (cli.gen) {
-        case 'legacy':
-          destPath = path.join(cli.path || destPath, name)
-          git.clone(appTemplateGitRepo, destPath, () => {
-            recursive(destPath, (err, files) => {
-              // `files` is an array of absolute file paths
-              for (let file of files) {
-                if (path.basename(file).match('ignitialio')) {
-                  fs.move(file, file.replace('ignitialio', name.toLowerCase()))
-                }
-              }
+        break
+      default:
+        repo = config[cli.lang][what].repo
+        destPath = path.join(cli.path || destPath, name)
 
-              replace({
-                regex: 'iioat',
-                replacement: name.toLowerCase(),
-                paths: [ destPath ],
-                recursive: true,
-                silent: true,
-              })
+        let replacements = config[cli.lang][what].replacements
 
-              replace({
-                regex: 'IgnitialIO',
-                replacement: name,
-                paths: [ destPath ],
-                recursive: true,
-                silent: true,
-              })
+        git.clone(repo, destPath, () => {
+          for (let replacement in replacements) {
+            let replType
+            switch (replacements[replacement]) {
+              case 'lowerCaseAppName':
+                replType = name.toLowerCase()
+                break
+              case 'appName':
+                replType = name
+                break
+              default:
+                replType = name
+            }
 
-              replace({
-                regex: 'ignitialio',
-                replacement: name.toLowerCase(),
-                paths: [ destPath ],
-                recursive: true,
-                silent: true,
-              })
-
-              rimraf(path.join(destPath, '.git'), () => {
-                console.log('done')
-              })
+            replace({
+              regex: replacement,
+              replacement: replType,
+              paths: [ destPath ],
+              recursive: true,
+              silent: true,
             })
+          }
+
+          rimraf(path.join(destPath, '.git'), () => {
+            console.log('done')
           })
-          break
-        default:
-          destPath = path.join(cli.path || destPath, name)
-          git.clone(appNxtTemplateGitRepo, destPath, () => {
-            recursive(destPath, (err, files) => {
-              // `files` is an array of absolute file paths
-              for (let file of files) {
-                if (path.basename(file).match('ignitialio')) {
-                  fs.move(file, file.replace('ignitialio', name.toLowerCase()))
-                }
-              }
-
-              replace({
-                regex: 'iioat',
-                replacement: name.toLowerCase(),
-                paths: [ destPath ],
-                recursive: true,
-                silent: true,
-              })
-
-              replace({
-                regex: '@ignitial/iio-app-nxt',
-                replacement: name.toLowerCase(),
-                paths: [ destPath ],
-                recursive: true,
-                silent: true,
-              })
-
-              replace({
-                regex: 'IgnitialIO',
-                replacement: name,
-                paths: [ destPath ],
-                recursive: true,
-                silent: true,
-              })
-
-              replace({
-                regex: 'ignitialio',
-                replacement: name.toLowerCase(),
-                paths: [ destPath ],
-                recursive: true,
-                silent: true,
-              })
-
-              rimraf(path.join(destPath, '.git'), () => {
-                console.log('done')
-              })
-            })
-          })
-      }
-    } else if (what === 'desktop') {
-      destPath = path.join(cli.path || destPath, name)
-      git.clone(desktopTemplateGitRepo, destPath, () => {
-        replace({
-          regex: 'iioeat',
-          replacement: name.toLowerCase(),
-          paths: [ destPath ],
-          recursive: true,
-          silent: true,
         })
-
-        rimraf(path.join(destPath, '.git'), () => {
-          console.log('done')
-        })
-      })
-    } else {
-      console.log(chalk.red('<what> option must be either "service" or "app" or "desktop"'))
     }
   })
 
