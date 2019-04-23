@@ -12,7 +12,7 @@ const replace = require('replace')
 const rimraf = require('rimraf')
 const listDirectories = require('list-directories')
 
-let config = yaml.parse(fs.readFileSync('./config/sample.yaml', 'utf8'))
+let config = yaml.parse(fs.readFileSync(path.join(process.cwd(), 'config/sample.yaml'), 'utf8'))
 
 const cfgPath = path.join('/home', process.env.USER, '.iio')
 if (fs.existsSync(cfgPath)) {
