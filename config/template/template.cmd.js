@@ -6,6 +6,7 @@ const git = require('simple-git')()
 const replace = require('replace')
 const rimraf = require('rimraf')
 const recursive = require('recursive-readdir')
+const listDirectories = require('list-directories')
 
 module.exports = function(config) {
   // repalace with your own code

@@ -34,16 +34,12 @@ let version = JSON.parse(packageDef).version
 
 let config = {
   apps: appsConfig,
-  destPath: '.',
   iioFolderPath: iioFolderPath
 }
 
 cli
   .version(version, '-v, --version')
-  .usage('[options] <command>')
-  .option('-p, --path <path>', 'set destination directory path. defaults to ./<name>')
-  .option('-a, --author <author>', 'set author')
-  .option('-l, --lang <language>', 'set programming language: py, js (default: js)')
+  .usage('<command>')
 
 let commands = fs.readdirSync(path.join(__dirname, 'commands'))
 

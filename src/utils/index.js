@@ -1,3 +1,7 @@
+const fs = require('fs-extra')
+const path = require('path')
+const listDirectories = require('list-directories')
+
 exports.cleanupAndExit = function(loweredName, servicePath) {
   console.log('creation of service ' + loweredName + ' failed')
   if (servicePath && fs.existsSync(servicePath)) {

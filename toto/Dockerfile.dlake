@@ -1,2 +1,0 @@
-FROM registry.ignitial.io/ignitial/dlake
-COPY ./datum /opt/dlake/datum
