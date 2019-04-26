@@ -9,6 +9,7 @@ module.exports = function(config) {
     .description('deploys redis, mongo and minio infrastructure (<mode> = dev|prod)')
     .option('-k, --kubeconfig <path>', 'kubectl configuration file path to access Kubernetes cluster')
     .option('-r, --rm', 'remove deployment')
+    .option('-s, --sentinel', 'redis sentinel enabled')
     .action(function(mode, options) {
       if (mode === 'dev') {
         let infraPath = path.join(config.iioFolderPath, 'infra')
@@ -38,7 +39,8 @@ module.exports = function(config) {
           fs.mkdirSync(mongoPath, { recursive: true })
         }
 
-        let composeFilePath = path.join(__dirname, '../../config/infra/docker-compose.yml')
+        let composeFilePath = path.join(__dirname, '../../config/infra/docker-compose' +
+          (options.sentinel ? '-sentinel' : '') + '.yml')
 
         if (options.rm) {
           console.log('remove infra services (redis, mongo, minio)...')
