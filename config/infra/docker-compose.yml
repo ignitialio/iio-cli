@@ -13,7 +13,7 @@ services:
     image: mongo:3.6
     container_name: mongo
     volumes:
-      - /home/${USER}/.iio/mongo:/data/db
+      - /home/${USER}/.iio/infra/mongo:/data/db
     ports:
       - "40000:27017"
     networks:
@@ -23,8 +23,8 @@ services:
     image: minio/minio
     container_name: minio
     volumes:
-      - /home/${USER}/.iio/minio/data:/data
-      - /home/${USER}/.iio/minio/config:/root/.minio
+      - /home/${USER}/.iio/infra/minio/data:/data
+      - /home/${USER}/.iio/infra/minio/config:/root/.minio
     ports:
       - "9000:9000"
     command: server /data

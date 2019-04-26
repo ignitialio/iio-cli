@@ -1,15 +1,38 @@
 {
-	"version": "22",
+	"version": "33",
 	"credential": {
 		"accessKey": "G4I3RZP3I2AS7EMWQPMZ",
-		"secretKey": "xMzrrXMtnFEOP/K7MDFRA/bPxRfiCYEXOTOTOYEK"
+		"secretKey": "xMzrrXMtnFEOP/K7MDFRA/bPxRfiCYEXOTOTOYEK",
+		"expiration": "1970-01-01T00:00:00Z",
+		"status": "enabled"
 	},
 	"region": "",
-	"browser": "on",
-	"domain": "",
+	"worm": "off",
 	"storageclass": {
 		"standard": "",
 		"rrs": ""
+	},
+	"cache": {
+		"drives": [],
+		"expiry": 90,
+		"maxuse": 80,
+		"exclude": []
+	},
+	"kms": {
+		"vault": {
+			"endpoint": "",
+			"auth": {
+				"type": "",
+				"approle": {
+					"id": "",
+					"secret": ""
+				}
+			},
+			"key-id": {
+				"name": "",
+				"version": 0
+			}
+		}
 	},
 	"notify": {
 		"amqp": {
@@ -28,25 +51,6 @@
 				"autoDeleted": false
 			}
 		},
-		"nats": {
-			"1": {
-				"enable": false,
-				"address": "",
-				"subject": "",
-				"username": "",
-				"password": "",
-				"token": "",
-				"secure": false,
-				"pingInterval": 0,
-				"streaming": {
-					"enable": false,
-					"clusterID": "",
-					"clientID": "",
-					"async": false,
-					"maxPubAcksInflight": 0
-				}
-			}
-		},
 		"elasticsearch": {
 			"1": {
 				"enable": false,
@@ -55,39 +59,35 @@
 				"index": ""
 			}
 		},
-		"redis": {
-			"1": {
-				"enable": false,
-				"format": "",
-				"address": "",
-				"password": "",
-				"key": ""
-			}
-		},
-		"postgresql": {
-			"1": {
-				"enable": false,
-				"format": "",
-				"connectionString": "",
-				"table": "",
-				"host": "",
-				"port": "",
-				"user": "",
-				"password": "",
-				"database": ""
-			}
-		},
 		"kafka": {
 			"1": {
 				"enable": false,
 				"brokers": null,
-				"topic": ""
+				"topic": "",
+				"tls": {
+					"enable": false,
+					"skipVerify": false,
+					"clientAuth": 0
+				},
+				"sasl": {
+					"enable": false,
+					"username": "",
+					"password": ""
+				}
 			}
 		},
-		"webhook": {
+		"mqtt": {
 			"1": {
 				"enable": false,
-				"endpoint": ""
+				"broker": "",
+				"topic": "",
+				"qos": 0,
+				"username": "",
+				"password": "",
+				"reconnectInterval": 0,
+				"keepAliveInterval": 0,
+				"queueDir": "",
+                                "queueLimit": 0
 			}
 		},
 		"mysql": {
@@ -103,16 +103,98 @@
 				"database": ""
 			}
 		},
-		"mqtt": {
+		"nats": {
 			"1": {
 				"enable": false,
-				"broker": "",
-				"topic": "",
-				"qos": 0,
-				"clientId": "",
+				"address": "",
+				"subject": "",
 				"username": "",
-				"password": ""
+				"password": "",
+				"token": "",
+				"secure": false,
+				"pingInterval": 0,
+				"streaming": {
+					"enable": false,
+					"clusterID": "",
+					"async": false,
+					"maxPubAcksInflight": 0
+				}
 			}
+		},
+		"nsq": {
+			"1": {
+				"enable": false,
+				"nsqdAddress": "",
+				"topic": "",
+				"tls": {
+					"enable": false,
+					"skipVerify": true
+				}
+			}
+		},
+		"postgresql": {
+			"1": {
+				"enable": false,
+				"format": "",
+				"connectionString": "",
+				"table": "",
+				"host": "",
+				"port": "",
+				"user": "",
+				"password": "",
+				"database": ""
+			}
+		},
+		"redis": {
+			"1": {
+				"enable": false,
+				"format": "",
+				"address": "",
+				"password": "",
+				"key": ""
+			}
+		},
+		"webhook": {
+			"1": {
+				"enable": false,
+				"endpoint": ""
+			}
+		}
+	},
+	"logger": {
+		"console": {
+			"enabled": true
+		},
+		"http": {
+			"target1": {
+				"enabled": false,
+				"endpoint": "https://username:password@example.com/api"
+			}
+		}
+	},
+	"compress": {
+		"enabled": false,
+		"extensions": [
+			".txt",
+			".log",
+			".csv",
+			".json"
+		],
+		"mime-types": [
+			"text/csv",
+			"text/plain",
+			"application/json"
+		]
+	},
+	"openid": {
+		"jwks": {
+			"url": null
+		}
+	},
+	"policy": {
+		"opa": {
+			"url": null,
+			"authToken": ""
 		}
 	}
 }
