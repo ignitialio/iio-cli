@@ -1,0 +1,113 @@
+{
+  "title": "Users",
+  "type": "object",
+  "description": "Application users",
+  "properties": {
+    "username": {
+      "type": "string",
+      "description": "Username",
+      "meta": {
+        "markIfInit": true
+      }
+    },
+    "firstname": {
+      "type": "string",
+      "description": "Firstname",
+      "meta": {
+        "markIfInit": true
+      }
+    },
+    "lastname": {
+      "type": "string",
+      "description": "Lastname",
+      "meta": {
+        "markIfInit": true
+      }
+    },
+    "role": {
+      "type": "string",
+      "description": "Role",
+      "enum": [
+        "admin",
+        "user"
+      ],
+      "meta": {
+        "markIfInit": true
+      }
+    },
+    "password": {
+      "type": "string",
+      "final": true,
+      "description": "Password"
+    },
+    "avatar": {
+      "type": "string",
+      "description": "Avatar",
+      "meta": {
+        "file": "image/*",
+        "maxSize": 50000,
+        "showAvatar": true
+      }
+    },
+    "lang": {
+      "type": "string",
+      "description": "User language",
+      "enum": [
+        "en-US",
+        "fr-FR",
+        "es-ES"
+      ],
+      "meta": {
+        "onchange": "app:lang" 
+      },
+      "default": "en-US"
+    },
+    "contactInfo": {
+      "type": "object",
+      "description": "Contact information",
+      "meta": {
+        "markIfInit": true
+      },
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "Email address"
+        },
+        "phone": {
+          "type": "object",
+          "description": "Phone numbers",
+          "properties": {
+            "mobile": {
+              "type": "string",
+              "description": "Mobile phone"
+            },
+            "office": {
+              "type": "string",
+              "description": "Office phone"
+            }
+          },
+          "required": [ "mobile", "office" ]
+        }
+      },
+      "required": [ "email", "phone" ]
+    },
+    "settings": {
+      "type": "object",
+      "description": "User settings",
+      "properties": {
+        "notificationsByEmail": {
+          "type": "boolean",
+          "description": "Get notifications by email"
+        }
+      }
+    },
+    "lastConnected": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last connection date",
+      "final": true
+    }
+  },
+  "required": [ "username", "firstname", "lastname", "role", "lang", "avatar", "password",
+    "contactInfo", "settings" ]
+}

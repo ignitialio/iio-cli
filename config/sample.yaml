@@ -5,7 +5,7 @@ js:
     repo: https://gitlab.com/iio-core/iio-svc-template.git
   desktop:
     repo: https://gitlab.com/iio-core/electron-app-template.git
-  hyperasset:
+  test:
     repo: https://gitlab.com/iio-core/iio-app-nxt.git
     replacements:
       iioat: 'lowerCaseAppName'

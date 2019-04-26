@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: traefik-conf
+  namespace: kube-system
+data:
+  traefik.toml: |
+    defaultEntryPoints = ["https", "http"]
+
+    logLevel = "INFO"
+
+    insecureSkipVerify = true
+
+    [entryPoints]
+      [entryPoints.http]
+        address = ":80"
+      [entryPoints.https]
+        address = ":443"
+        [entryPoints.https.tls]
+      [entryPoints.api]
+        address = ":8081"
+
+    [api]
+    entryPoint = "api"
+    dashboard = true
+    debug = false
+
+    [kubernetes]

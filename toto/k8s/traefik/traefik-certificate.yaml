@@ -1,0 +1,36 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: traefik-cert-app
+spec:
+  secretName: traefik-cert-app
+  issuerRef:
+    name: letsencrypt-staging
+    kind: ClusterIssuer
+  commonName: ignitial.com
+  acme:
+    config:
+    - http01:
+        ingress: iio
+      domains:
+      - ignitial.com
+      - dev.ignitial.com
+---
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: traefik-cert-ui
+  namespace: kube-system
+spec:
+  secretName: traefik-cert-ui
+  issuerRef:
+    name: letsencrypt-staging
+    kind: ClusterIssuer
+  commonName: qoonstro.com
+  acme:
+    config:
+    - http01:
+        ingress: traefik-web-ui
+      domains:
+      - qoonstro.com
+      - dev.qoonstro.com

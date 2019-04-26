@@ -1,0 +1,40 @@
+{
+  "title": "Notification",
+  "type": "object",
+  "description": "User notification",
+  "properties": {
+    "message": {
+      "type": "string",
+      "description": "Associated message"
+    },
+    "user": {
+      "type": "string",
+      "description": "Destination user"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "noack",
+        "ack"
+      ]
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "spam",
+        "info",
+        "warn",
+        "alert",
+        "critical"
+      ]
+    },
+    "link": {
+      "type": "string",
+      "description": "Target URL"
+    },
+    "image": {
+      "type": "string",
+      "description": "Image URL"
+    }
+  }
+}

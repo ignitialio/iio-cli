@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: busybox
+  namespace: default
+spec:
+  containers:
+  - name: busybox
+    image: busybox:1.28
+    command:
+      - sleep
+      - "3600"
+    imagePullPolicy: IfNotPresent
+    env:
+      - name: MONGODB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: iiosecrets
+            key: mongodb_pwd
+  restartPolicy: Always
