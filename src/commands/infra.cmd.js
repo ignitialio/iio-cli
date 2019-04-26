@@ -46,34 +46,69 @@ module.exports = function(config) {
           console.log('remove infra services (redis, mongo, minio)...')
 
           console.log('try to remove services...')
-          console.log(composeFilePath)
-          try {
-            exec('docker-compose -f ' + composeFilePath + ' stop')
-            exec('docker-compose -f ' + composeFilePath + ' rm -f')
-          } catch (err) {
-            console.error('failed: have you installed docker-compose ?...', err)
-          }
 
-          try {
-            exec('docker network rm infra')
-          } catch (err) {
-            console.error('failed to remove network', err)
-            process.exit(1)
+          if (options.sentinel) {
+            try {
+              exec('docker stack rm infra')
+            } catch (err) {
+              console.error('failed: have you initialized a stack ?...', err)
+              process.exit(1)
+            }
+
+            console.log('try to remove network...')
+            try {
+              exec('docker network rm infra_sentinel')
+            } catch (err) {
+              console.error('failed to remove network', err)
+              process.exit(1)
+            }
+          } else {
+            try {
+              exec('docker-compose -f ' + composeFilePath + ' stop')
+              exec('docker-compose -f ' + composeFilePath + ' rm -f')
+            } catch (err) {
+              console.error('failed: have you installed docker-compose ?...', err)
+            }
+
+            console.log('try to remove network...')
+            try {
+              exec('docker network rm infra')
+            } catch (err) {
+              console.error('failed to remove network', err)
+              process.exit(1)
+            }
           }
         } else {
           console.log('start infra (redis, mongo, minio) for dev purposes...')
-          console.log('try to create infra docker bridge network...')
-          try {
-            exec('docker network create infra')
-          } catch (err) {
-            console.log('network exists already')
-          }
 
-          try {
-            exec('docker-compose -f ' + composeFilePath + ' up -d')
-          } catch (err) {
-            console.error('failed: have you installed docker-compose ?...', err)
-            process.exit(1)
+          if (options.sentinel) {
+            console.log('try to create infra_sentinel docker overlay network...')
+            try {
+              exec('docker network create --driver overlay infra_sentinel')
+            } catch (err) {
+              console.log('network exists already')
+            }
+
+            try {
+              exec('docker stack deploy --compose-file ' + composeFilePath + ' infra')
+            } catch (err) {
+              console.error('failed: have you initialized a docker swarm ?...', err)
+              process.exit(1)
+            }
+          } else {
+            console.log('try to create infra docker bridge network...')
+            try {
+              exec('docker network create infra')
+            } catch (err) {
+              console.log('network exists already')
+            }
+
+            try {
+              exec('docker-compose -f ' + composeFilePath + ' up -d')
+            } catch (err) {
+              console.error('failed: have you installed docker-compose ?...', err)
+              process.exit(1)
+            }
           }
         }
       } else {
