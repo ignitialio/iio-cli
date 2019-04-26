@@ -47,6 +47,15 @@ for (let c of commands) {
   require(path.join(__dirname, 'commands', c))(config)
 }
 
+cli
+  .on('command:*', function (command) {
+    const firstCommand = command[0]
+    if (!this.commands.find(c => c._name == firstCommand)) {
+        console.error('invalid command: %s\nsee --help for a list of available commands.', cli.args.join(' '))
+        process.exit(1)
+    }
+  })
+
 if (!process.argv.slice(2).length) {
   cli.outputHelp(make_orange)
 }
