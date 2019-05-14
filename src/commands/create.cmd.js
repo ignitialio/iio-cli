@@ -28,8 +28,10 @@ module.exports = function(config) {
     .description('initialize new iio web/desktop application or service project named <name> (<what> = ' + bootstrapTypesDescription + ')')
     .option('-p, --path <path>', 'set destination directory path. defaults to ./<name>')
     .option('-l, --lang <language>', 'set programming language: py, js (default: js)')
+    .option('-t, --tag <version_tag>', 'selects specific version thanks to git tags. Could be branch name as well')
     .action(function(what, name, options) {
       options.lang = options.lang || 'js'
+
       if (languages.indexOf(options.lang) === -1) {
         console.log('language ' + options.lang + ' is not supported. Exiting...')
         process.exit(1)
@@ -41,6 +43,12 @@ module.exports = function(config) {
       if (currentBootstrapIndex === -1) {
         console.log('bootstrap template ' + what + ' is not supported. Exiting...')
         process.exit(1)
+      }
+
+      let cloneOpts = [ '--depth=1' ]
+
+      if (options.tag) {
+        cloneOpts.push('--branch=' + options.tag)
       }
 
       let repo
@@ -58,7 +66,7 @@ module.exports = function(config) {
             utils.cleanupAndExit(loweredName)
           }
 
-          git.clone(repo, destPath, async () => {
+          git.clone(repo, destPath, cloneOpts, async () => {
             await utils.renameDirs(destPath, loweredName)
 
             recursive(destPath, (err, files) => {
@@ -100,7 +108,7 @@ module.exports = function(config) {
 
           repo = config.apps[options.lang].app.repo
 
-          git.clone(repo, destPath, () => {
+          git.clone(repo, destPath, cloneOpts, () => {
             recursive(destPath, (err, files) => {
               // `files` is an array of absolute file paths
               for (let file of files) {
@@ -152,7 +160,7 @@ module.exports = function(config) {
 
           repo = config.apps[options.lang].desktop.repo
 
-          git.clone(repo, destPath, () => {
+          git.clone(repo, destPath, cloneOpts, () => {
             replace({
               regex: 'iioeat',
               replacement: loweredName,
@@ -172,7 +180,7 @@ module.exports = function(config) {
 
           let replacements = config.apps[options.lang][what].replacements
 
-          git.clone(repo, destPath, () => {
+          git.clone(repo, destPath, cloneOpts, () => {
             for (let replacement in replacements) {
               let replType
               switch (replacements[replacement]) {
