@@ -1,8 +1,8 @@
 js:
   app:
-    repo: https://gitlab.com/iio-core/iio-app-nxt.git
+    repo: https://github.com/ignitialio/iio-app-template.git
   service:
-    repo: https://gitlab.com/iio-core/iio-svc-template.git
+    repo: https://github.com/ignitialio/iio-svc-template.git
   desktop:
     repo: https://gitlab.com/iio-core/electron-app-template.git
   test:
