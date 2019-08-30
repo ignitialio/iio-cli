@@ -37,11 +37,26 @@ module.exports = function(config) {
         process.exit(1)
       }
 
-      console.log('selected lang: ', options.lang)
-      let availableBootstraps = Object.keys(config.apps[options.lang])
+      console.log('selected lang: [%s]', options.lang)
+      console.log('')
+      console.log('-------------------------------------------------')
+      console.log('!!! warning: templates are still work in progress')
+      console.log('-------------------------------------------------')
+      console.log('')
+      let availableBootstraps = []
+
+      for (let bs in config.apps[options.lang]) {
+        if (config.apps[options.lang][bs].repo) {
+          availableBootstraps.push(bs)
+        } else {
+          for (let variant in config.apps[options.lang][bs]) {
+            availableBootstraps.push(bs + ':' + variant)
+          }
+        }
+      }
       let currentBootstrapIndex = availableBootstraps.indexOf(what)
       if (currentBootstrapIndex === -1) {
-        console.log('bootstrap template ' + what + ' is not supported. Exiting...')
+        console.error('bootstrap template [' + what + '] is not supported. Exiting...')
         process.exit(1)
       }
 
@@ -52,9 +67,16 @@ module.exports = function(config) {
       }
 
       let repo
+      let variant
 
       let loweredName = name.toLowerCase()
       let upperedName = loweredName.slice(0,1).toUpperCase() + loweredName.slice(1)
+
+      if (what.match(':')) {
+        let wwhat = what.split(':')
+        what = wwhat[0]
+        variant = wwhat[1]
+      }
 
       switch (what) {
         case 'service':
@@ -103,58 +125,6 @@ module.exports = function(config) {
             })
           })
           break
-        case 'app':
-          destPath = path.join(options.path || destPath, name)
-
-          repo = config.apps[options.lang].app.repo
-
-          git.clone(repo, destPath, cloneOpts, () => {
-            recursive(destPath, (err, files) => {
-              // `files` is an array of absolute file paths
-              for (let file of files) {
-                if (path.basename(file).match('ignitialio')) {
-                  fs.move(file, file.replace('ignitialio', loweredName))
-                }
-              }
-
-              replace({
-                regex: 'iioat',
-                replacement: loweredName,
-                paths: [ destPath ],
-                recursive: true,
-                silent: true,
-              })
-
-              replace({
-                regex: '@ignitial/iio-app-nxt',
-                replacement: loweredName,
-                paths: [ destPath ],
-                recursive: true,
-                silent: true,
-              })
-
-              replace({
-                regex: 'IgnitialIO',
-                replacement: name,
-                paths: [ destPath ],
-                recursive: true,
-                silent: true,
-              })
-
-              replace({
-                regex: 'ignitialio',
-                replacement: loweredName,
-                paths: [ destPath ],
-                recursive: true,
-                silent: true,
-              })
-
-              rimraf(path.join(destPath, '.git'), () => {
-                console.log('done')
-              })
-            })
-          })
-          break
         case 'desktop':
           destPath = path.join(options.path || destPath, name)
 
@@ -175,15 +145,51 @@ module.exports = function(config) {
           })
           break
         default:
-          repo = config.apps[options.lang][what].repo
+          let variantConfig
+
+          if (variant) {
+            variantConfig = config.apps[options.lang][what][variant]
+          } else {
+            variantConfig = config.apps[options.lang][what]
+          }
+
+          repo = variantConfig.repo
+
+          if (!repo) {
+            console.error('repo name missing')
+          }
+
           destPath = path.join(options.path || destPath, name)
 
-          let replacements = config.apps[options.lang][what].replacements
+          let textReplacements = variantConfig.textReplacements
 
           git.clone(repo, destPath, cloneOpts, () => {
-            for (let replacement in replacements) {
+            // `files` is an array of absolute file paths
+            if (variantConfig.filanameReplacements) {
+              for (let filename in variantConfig.filanameReplacements) {
+                if (path.basename(file).match(filename)) {
+                  let newFilename
+                  switch (variantConfig.filanameReplacements[filename]) {
+                    case 'lowerCaseAppName':
+                      newFilename = loweredName
+                      break
+                    case 'appName':
+                      newFilename = name
+                      break
+                    case 'upperCaseAppName':
+                      newFilename = upperedName
+                    default:
+                      newFilename = name
+                  }
+
+                  fs.move(file, file.replace(filename, newFilename))
+                }
+              }
+            }
+
+            for (let replacement in textReplacements) {
               let replType
-              switch (replacements[replacement]) {
+              switch (textReplacements[replacement]) {
                 case 'lowerCaseAppName':
                   replType = loweredName
                   break

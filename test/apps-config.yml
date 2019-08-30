@@ -3,23 +3,9 @@ js:
     experimental:
       description: Experimental light weight web application template
       repo: https://github.com/ignitialio/iio-app-template.git
-      textReplacements:
-        iioat: lowerCaseAppName
-        "@ignitial/iio-app-template": lowerCaseAppName
-        IgnitialIO: appName
-        ignitialio: lowerCaseAppName
-      fileReplacements:
-        ignitialio: lowerCaseAppName
     material:
       description: Vuetify based web application template
       repo: https://github.com/ignitialio/iio-app-template.git
-      textReplacements:
-        iioat: lowerCaseAppName
-        "@ignitial/iio-app-material-template": lowerCaseAppName
-        IgnitialIO: appName
-        ignitialio: lowerCaseAppName
-      fileReplacements:
-        ignitialio: lowerCaseAppName
   service:
     repo: https://github.com/ignitialio/iio-svc-template.git
     description: IIOS service template
@@ -27,17 +13,10 @@ js:
     material:
       description: Vuetify based site application template
       repo: https://github.com/ignitialio/iio-web-material-template.git
-      textReplacements:
-        iioat: lowerCaseAppName
-        "@ignitial/iio-app-material-template": lowerCaseAppName
-        IgnitialIO: appName
-        ignitialio: lowerCaseAppName
-      fileReplacements:
-        ignitialio: lowerCaseAppName
   test:
     repo: https://gitlab.com/iio-core/iio-app-nxt.git
     description: IIOS CLI creation test for user added templates
-    textReplacements:
+    replacements:
       iioat: lowerCaseAppName
       "@ignitial/iio-app-nxt": lowerCaseAppName
       IgnitialIO: appName

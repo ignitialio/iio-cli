@@ -8,7 +8,8 @@ const path = require('path')
 
 let appsConfig = yaml.parse(fs.readFileSync(path.join(__dirname, '../config/sample.yaml'), 'utf8'))
 
-const iioFolderPath = path.join('/home', process.env.USER, '.iio')
+const iioFolderPath = process.env.IIOS_CLI_CFG_PATH ||
+  path.join('/home', process.env.USER, '.iio')
 
 if (!fs.existsSync(iioFolderPath)) {
   fs.mkdirSync(iioFolderPath)
@@ -31,6 +32,10 @@ if (fs.existsSync(appsCfgPath)) {
 
 let packageDef = fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8')
 let version = JSON.parse(packageDef).version
+
+console.log('-------------------------------------------------------------------------------')
+console.log('IIOS CLI version ' + version)
+console.log('-------------------------------------------------------------------------------')
 
 let config = {
   apps: appsConfig,
