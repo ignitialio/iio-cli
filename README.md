@@ -1,10 +1,11 @@
-# Ignitial.io apps and services bootsraper
+# Ignitial.io apps and services bootstrap and Kubernets/Swarm deploy
 
 Deploy micro-services based cluster with web application front-end in minutes and 3 lines
-of shell commands:
+of shell commands:  
 
-<link rel="alternate" type="application/x-asciicast" href="assets/iiocli.cast">
+[![asciicast](https://asciinema.org/a/HCCJ3KFo5DOqSdPlYw929WzKf.svg)](https://asciinema.org/a/HCCJ3KFo5DOqSdPlYw929WzKf)
 
+  
 ## Install
 
 ```bash
