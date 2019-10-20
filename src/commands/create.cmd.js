@@ -38,26 +38,29 @@ module.exports = function(config) {
       }
 
       console.log('selected lang: [%s]', options.lang)
-      console.log('')
-      console.log('-------------------------------------------------')
-      console.log('!!! warning: templates are still work in progress')
-      console.log('-------------------------------------------------')
-      console.log('')
+
       let availableBootstraps = []
+      let defaultBootstraps = {}
 
       for (let bs in config.apps[options.lang]) {
         if (config.apps[options.lang][bs].repo) {
           availableBootstraps.push(bs)
         } else {
           for (let variant in config.apps[options.lang][bs]) {
+            if (config.apps[options.lang][bs][variant].default) {
+              defaultBootstraps[bs] = bs + ':' + variant
+            }
             availableBootstraps.push(bs + ':' + variant)
           }
         }
       }
+
       let currentBootstrapIndex = availableBootstraps.indexOf(what)
       if (currentBootstrapIndex === -1) {
-        console.error('bootstrap template [' + what + '] is not supported. Exiting...')
-        process.exit(1)
+        if (!defaultBootstraps[what]) {
+          console.error('bootstrap template [' + what + '] is not supported. Exiting...')
+          process.exit(1)
+        }
       }
 
       let cloneOpts = [ '--depth=1' ]
@@ -76,6 +79,12 @@ module.exports = function(config) {
         let wwhat = what.split(':')
         what = wwhat[0]
         variant = wwhat[1]
+      } else {
+        if (defaultBootstraps[what]) {
+          let wwhat = defaultBootstraps[what].split(':')
+          what = wwhat[0]
+          variant = wwhat[1]
+        }
       }
 
       switch (what) {

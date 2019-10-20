@@ -11,6 +11,7 @@ js:
       fileReplacements:
         ignitialio: lowerCaseAppName
     material:
+      default: true
       description: Vuetify based web application template
       repo: https://github.com/ignitialio/iio-app-template.git
       textReplacements:
@@ -25,6 +26,7 @@ js:
     description: IIOS service template
   web:
     material:
+      default: true
       description: Vuetify based site application template
       repo: https://github.com/ignitialio/iio-web-material-template.git
       textReplacements:
