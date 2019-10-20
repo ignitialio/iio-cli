@@ -9,7 +9,6 @@ const recursive = require('recursive-readdir')
 const utils = require('../utils')
 
 module.exports = function(config) {
-  console.log(config.apps)
   let templates = config.apps.templates
   let destPath = '.'
   let languages = Object.keys(templates)
