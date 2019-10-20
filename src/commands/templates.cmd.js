@@ -9,12 +9,13 @@ const recursive = require('recursive-readdir')
 const utils = require('../utils')
 
 module.exports = function(config) {
+  let templates = config.apps.templates
   let destPath = '.'
-  let languages = Object.keys(config.apps)
+  let languages = Object.keys(templates)
   let bootstrapTypes = [ 'service', 'app', 'desktop' ]
 
-  for (let l in config.apps) {
-    for (let t in config.apps[l]) {
+  for (let l in templates) {
+    for (let t in templates[l]) {
       if (bootstrapTypes.indexOf(t) === -1) {
         bootstrapTypes.push(t)
       }
@@ -38,13 +39,13 @@ module.exports = function(config) {
       console.log('selected lang: [%s]', options.lang)
 
       console.log('available templates for [' + options.lang + '] language:')
-      for (let template in config.apps[options.lang]) {
-        if (config.apps[options.lang][template].repo) {
-          console.log('\t[' + template + '] : ' + config.apps[options.lang][template].description)
+      for (let template in templates[options.lang]) {
+        if (templates[options.lang][template].repo) {
+          console.log('\t[' + template + '] : ' + templates[options.lang][template].description)
         } else {
           console.log('\t[' + template + '] variants: ')
-          for (let variant in config.apps[options.lang][template]) {
-            console.log('\t\t[' + template + ':' + variant + '] : ' + config.apps[options.lang][template][variant].description)
+          for (let variant in templates[options.lang][template]) {
+            console.log('\t\t[' + template + ':' + variant + '] : ' + templates[options.lang][template][variant].description)
           }
         }
       }

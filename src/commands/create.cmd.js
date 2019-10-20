@@ -9,12 +9,14 @@ const recursive = require('recursive-readdir')
 const utils = require('../utils')
 
 module.exports = function(config) {
+  console.log(config.apps)
+  let templates = config.apps.templates
   let destPath = '.'
-  let languages = Object.keys(config.apps)
+  let languages = Object.keys(templates)
   let bootstrapTypes = [ 'service', 'app', 'desktop' ]
 
-  for (let l in config.apps) {
-    for (let t in config.apps[l]) {
+  for (let l in templates) {
+    for (let t in templates[l]) {
       if (bootstrapTypes.indexOf(t) === -1) {
         bootstrapTypes.push(t)
       }
@@ -42,12 +44,12 @@ module.exports = function(config) {
       let availableBootstraps = []
       let defaultBootstraps = {}
 
-      for (let bs in config.apps[options.lang]) {
-        if (config.apps[options.lang][bs].repo) {
+      for (let bs in templates[options.lang]) {
+        if (templates[options.lang][bs].repo) {
           availableBootstraps.push(bs)
         } else {
-          for (let variant in config.apps[options.lang][bs]) {
-            if (config.apps[options.lang][bs][variant].default) {
+          for (let variant in templates[options.lang][bs]) {
+            if (templates[options.lang][bs][variant].default) {
               defaultBootstraps[bs] = bs + ':' + variant
             }
             availableBootstraps.push(bs + ':' + variant)
@@ -90,7 +92,7 @@ module.exports = function(config) {
       switch (what) {
         case 'service':
           destPath = path.join(options.path || destPath, name + '-service')
-          repo = config.apps[options.lang].service.repo
+          repo = templates[options.lang].service.repo
 
           if (!loweredName.match(/^[a-z]+$/)) {
             console.log('service name must contain only letters from a to z or A to Z.')
@@ -137,7 +139,7 @@ module.exports = function(config) {
         case 'desktop':
           destPath = path.join(options.path || destPath, name)
 
-          repo = config.apps[options.lang].desktop.repo
+          repo = templates[options.lang].desktop.repo
 
           git.clone(repo, destPath, cloneOpts, () => {
             replace({
@@ -157,9 +159,9 @@ module.exports = function(config) {
           let variantConfig
 
           if (variant) {
-            variantConfig = config.apps[options.lang][what][variant]
+            variantConfig = templates[options.lang][what][variant]
           } else {
-            variantConfig = config.apps[options.lang][what]
+            variantConfig = templates[options.lang][what]
           }
 
           repo = variantConfig.repo
