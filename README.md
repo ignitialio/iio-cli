@@ -1,5 +1,10 @@
 # Ignitial.io apps and services bootsraper
 
+Deploy micro-services based cluster with web application front-end in minutes and 3 lines
+of shell commands:
+
+<link rel="alternate" type="application/x-asciicast" href="assets/iiocli.cast">
+
 ## Install
 
 ```bash
