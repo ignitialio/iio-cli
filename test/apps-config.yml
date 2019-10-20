@@ -11,6 +11,7 @@ templates:
           ignitialio: lowerCaseAppName
         fileReplacements:
           ignitialio: lowerCaseAppName
+        message: Your experimental micro-services based application is ready
       material:
         default: true
         description: Vuetify based web application template
@@ -22,9 +23,11 @@ templates:
           ignitialio: lowerCaseAppName
         fileReplacements:
           ignitialio: lowerCaseAppName
+        message: Your micro-services based application is ready
     service:
       repo: https://github.com/ignitialio/iio-svc-template.git
       description: IIOS service template
+      message: Your Javascript Ignitial.io service is ready
     web:
       material:
         default: true
@@ -37,15 +40,10 @@ templates:
           ignitialio: lowerCaseAppName
         fileReplacements:
           ignitialio: lowerCaseAppName
-    test:
-      repo: https://gitlab.com/iio-core/iio-app-nxt.git
-      description: IIOS CLI creation test for user added templates
-      textReplacements:
-        iioat: lowerCaseAppName
-        "@ignitial/iio-app-nxt": lowerCaseAppName
-        IgnitialIO: appName
-        ignitialio: lowerCaseAppName
+        message: Your micro-services based web site is ready
   py:
     service:
       repo: https://gitlab.com/iio-core/iio-py-svc-template.git
       description: Python IIOS service template
+      message: Your Python Ignitial.io service is ready
+version: 2.7.0

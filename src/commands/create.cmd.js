@@ -72,6 +72,7 @@ module.exports = function(config) {
 
       let repo
       let variant
+      let message
 
       let loweredName = name.toLowerCase()
       let upperedName = loweredName.slice(0,1).toUpperCase() + loweredName.slice(1)
@@ -92,6 +93,7 @@ module.exports = function(config) {
         case 'service':
           destPath = path.join(options.path || destPath, name + '-service')
           repo = templates[options.lang].service.repo
+          message = templates[options.lang].service.message
 
           if (!loweredName.match(/^[a-z]+$/)) {
             console.log('service name must contain only letters from a to z or A to Z.')
@@ -130,6 +132,7 @@ module.exports = function(config) {
               })
 
               rimraf(path.join(destPath, '.git'), () => {
+                console.log(message)
                 console.log('done')
               })
             })
@@ -139,6 +142,7 @@ module.exports = function(config) {
           destPath = path.join(options.path || destPath, name)
 
           repo = templates[options.lang].desktop.repo
+          message = templates[options.lang].desktop.message
 
           git.clone(repo, destPath, cloneOpts, () => {
             replace({
@@ -150,6 +154,7 @@ module.exports = function(config) {
             })
 
             rimraf(path.join(destPath, '.git'), () => {
+              console.log(message)
               console.log('done')
             })
           })
@@ -164,6 +169,7 @@ module.exports = function(config) {
           }
 
           repo = variantConfig.repo
+          message = variantConfig.message
 
           if (!repo) {
             console.error('repo name missing')
@@ -222,6 +228,7 @@ module.exports = function(config) {
             }
 
             rimraf(path.join(destPath, '.git'), () => {
+              console.log(message)
               console.log('done')
             })
           })
