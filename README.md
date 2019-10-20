@@ -21,3 +21,35 @@ See tool's help:
 ```bash
 iio
 ```
+
+### Create a new Ignitial.io app from scratch
+
+```bash
+iio create app myUberApp
+...
+```  
+
+### Deploy existing app to a Kubernetes cluster
+
+```bash
+...
+# cd to app folder or use -w option to define working directory
+cd myUberApp
+# -l: use minikube
+iio deploy -l
+```
+
+### Delete exsiting deployment
+
+```bash
+# you must be in the app folder or use -w option to define working directory
+# -l: use minikube
+iio remove -l
+```
+
+### Create a new Ignitial.io service from scratch
+
+```bash
+iio create service myUberService
+...
+```  
