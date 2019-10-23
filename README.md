@@ -5,7 +5,7 @@ of shell commands:
 
 [![asciicast](https://asciinema.org/a/HCCJ3KFo5DOqSdPlYw929WzKf.svg)](https://asciinema.org/a/HCCJ3KFo5DOqSdPlYw929WzKf)
 
-  
+
 ## Install
 
 ```bash
@@ -41,16 +41,14 @@ iio create app myUberApp
 ...
 # cd to app folder or use -w option to define working directory
 cd myUberApp
-# -l: use minikube
-iio deploy -l
+iio deploy
 ```
 
 ### Delete exsiting deployment
 
 ```bash
 # you must be in the app folder or use -w option to define working directory
-# -l: use minikube
-iio remove -l
+iio remove
 ```
 
 ### Create a new Ignitial.io service from scratch

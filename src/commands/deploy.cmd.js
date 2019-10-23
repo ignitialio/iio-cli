@@ -2,9 +2,12 @@ const cli = require('commander')
 const fs = require('fs-extra')
 const path = require('path')
 const spawn = require('child_process').spawn
+const YAML = require('yaml')
+const expandHomeDir = require('expand-home-dir')
 
 module.exports = function(config) {
   function proceed(action, options) {
+    options.ingress = options.ingress || 'nginx'
     options.orchestrator = options.orchestrator || 'k8s'
     let npmDeployCmdTarget = 'deploy'
     let npmRemoveCmdTarget = 'remove'
@@ -13,6 +16,22 @@ module.exports = function(config) {
     if (options.workingDir) {
       workingDirectory = path.resolve(options.workingDir)
     }
+
+    let configFile = path.join(workingDirectory, 'k8s', 'config', 'deploy.yaml')
+    let config
+
+    try {
+      config = fs.readFileSync(configFile, 'utf8')
+      config = YAML.parse(config)
+
+      if (config.cluster.kubeConfigPath.match('~')) {
+        config.cluster.kubeConfigPath = expandHomeDir(config.cluster.kubeConfigPath)
+      }
+    } catch (err) {
+      console.error('error when processing deploy config', err)
+    }
+
+    process.env.IIOS_K8S_KUBECONFIG_PATH = config.cluster.kubeConfigPath
 
     switch (options.orchestrator) {
       case 'k8s':
@@ -36,23 +55,6 @@ module.exports = function(config) {
         if (options.ingress && options.ingress !== '') {
           console.log('value [' + options.ingress + '] for option [ingress] is not available')
         }
-    }
-
-    if (options.kubeconfig) {
-      process.env.IIOS_K8S_KUBECONFIG_PATH = options.kubeconfig
-    }
-
-    if (options.local) {
-      npmDeployCmdTarget += ':minikube'
-      npmRemoveCmdTarget += ':minikube'
-    }
-
-    if (options.domain) {
-      process.env.IIOS_DEPLOY_DOMAIN = options.domain
-    }
-
-    if (options.letsencrypt) {
-      process.env.IIOS_ENABLE_LETSENCRYPT = true
     }
 
     try {
@@ -90,7 +92,7 @@ module.exports = function(config) {
         })
       }
     } catch (err) {
-      console.error('failed to deploy', err)
+      console.error('error to deploy', err)
       process.exit(1)
     }
   }
@@ -102,10 +104,6 @@ module.exports = function(config) {
     .option('-w, --workingDir <path>', 'set working directory path (default=.')
     .option('-o, --orchestrator <type>', 'set orchestrator type (k8s|swarm), default=k8s')
     .option('-i, --ingress <inressType>', 'set ingress type (nginx|traefik, default=nginx)')
-    .option('-l, --local', 'set cluster target to local minikube')
-    .option('-k, --kubeconfig <path>', 'kubeconfig file path (default=~/.kube/config)')
-    .option('-d, --domain <domain>', 'domain to be used as app entry point (default=mini.kube)')
-    .option('-l, --letsencrypt', 'activate letsencrypt for <domain> given by the --domain option (needs preconfigured domain DNS entry)')
     .action(function(options) {
       proceed('deploy', options)
     })
@@ -117,10 +115,6 @@ module.exports = function(config) {
     .option('-w, --workingDir <path>', 'set working directory path (default=.')
     .option('-o, --orchestrator <type>', 'set orchestrator type (k8s|swarm), default=k8s')
     .option('-i, --ingress <inressType>', 'set ingress type (nginx|traefik, default=nginx)')
-    .option('-l, --local', 'set cluster target to local minikube')
-    .option('-k, --kubeconfig <path>', 'kubeconfig file path (default=~/.kube/config)')
-    .option('-d, --domain <domain>', 'domain to be used as app entry point (default=mini.kube)')
-    .option('-l, --letsencrypt', 'activate letsencrypt for <domain> given by the --domain option (needs preconfigured domain DNS entry)')
     .action(function(options) {
       proceed('remove', options)
     })

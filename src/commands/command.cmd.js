@@ -15,7 +15,7 @@ module.exports = function(config) {
             options.dest = options.dest || name
             let destPath = path.resolve(process.cwd(), options.dest)
             if (fs.existsSync(destPath)) {
-              console.error('failed: destination directory already exists')
+              console.error('error: destination directory already exists')
               process.exit(1)
             }
             fs.mkdirSync(destPath)
@@ -25,7 +25,7 @@ module.exports = function(config) {
 
             console.log('done')
           } catch (err) {
-            console.error('failed to create command plugin', err)
+            console.error('error to create command plugin', err)
           }
           break
         case 'add':
@@ -39,7 +39,7 @@ module.exports = function(config) {
             fs.copyFileSync(srcPath, path.join(__dirname, name + '.cmd.js'))
             console.log('done')
           } catch (err) {
-            console.error('failed to add command plugin', err)
+            console.error('error to add command plugin', err)
           }
           break
         case 'remove':
@@ -48,7 +48,7 @@ module.exports = function(config) {
             fs.unlinkSync(fullpath)
             console.log('done')
           } catch (err) {
-            console.error('failed: command does not exist')
+            console.error('error: command does not exist')
           }
           break
         default:
