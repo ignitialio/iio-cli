@@ -25,8 +25,15 @@ function updateElement(which, data) {
           console.log('warning: json query [' + m + '] returned "undefined". will be replaced with empty string')
           alt = ''
         }
+
         if (typeof alt === 'string') {
           result = result.replace('{{' + m + '}}', alt)
+        } else if (typeof alt === 'number') {
+          if (which !== '{{' + m + '}}') {
+            result = result.replace('{{' + m + '}}', alt)
+          } else {
+            result = alt
+          }
         } else {
           result = alt
         }
@@ -47,6 +54,26 @@ function updateElement(which, data) {
           } catch (err) {
             console.error(' config file [' + url + '] is missing')
             process.exit(1)
+          }
+        } else if (m.match(/str/)) {
+          let query = m.match(/str\((.*?)\)/)[1]
+
+          let alt = jp.query(data, query)[0]
+          if (!alt) {
+            console.log('warning: json query [' + m + '] returned "undefined". will be replaced with empty string')
+            alt = ''
+          }
+
+          if (typeof alt === 'string') {
+            result = result.replace('{{' + m + '}}', '' + alt)
+          } else if (typeof alt === 'number') {
+            if (which !== '{{' + m + '}}') {
+              result = result.replace('{{' + m + '}}', '' + alt)
+            } else {
+              result = '' + alt
+            }
+          } else {
+            result = '' + alt
           }
         } else {
           console.log('weird value for property', m)
@@ -131,20 +158,18 @@ module.exports = function(config) {
       try {
         config = fs.readFileSync(configFile, 'utf8')
         config = YAML.parse(config)
+        config = updateRefs(config)
       } catch (err) {
         console.error('error when processing [' + target + '] config', err)
       }
 
       switch (action) {
         case 'get':
-          config = updateRefs(config)
           console.log(JSON.stringify(config, null, 2))
 
           console.log('\ndone')
           break
         case 'generate':
-          config = updateRefs(config)
-
           if (config.cluster.secrets) {
             for (let secret of config.cluster.secrets) {
               if (secret.file) {
@@ -160,9 +185,28 @@ module.exports = function(config) {
           // console.log(JSON.stringify(config, null, 2))
           recursive(templatesDirectory, (err, files) => {
             files = _.sortBy(files, e => path.basename(e))
+
+            switch (config.cluster.ingress) {
+              case 'traefik':
+                files = _.filter(files, e => {
+                  return !path.basename(e).match(/nginx/)
+                })
+                break
+              case 'nginx':
+                files = _.filter(files, e => {
+                  return !path.basename(e).match(/traefik/)
+                })
+                break
+              default:
+                console.log('warning: [deploy.cluster.ingress] can only be nginx|traefik. set to nginx')
+                files = _.filter(files, e => {
+                  return !path.basename(e).match(/traefik/)
+                })
+            }
+
             for (let file of files) {
               if (!config.iios.app.registry.configData && path.basename(file).match(/regcred/)) {
-                console.log('warning: skip ergistry credentials because is empty')
+                console.log('warning: skip registry credentials because data is empty')
                 continue
               }
               let data = fs.readFileSync(file, 'utf8')

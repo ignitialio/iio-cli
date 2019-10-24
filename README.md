@@ -109,14 +109,33 @@ cluster:
   secrets:
     # declare app-secrets (no other reference to the name) that is an YAML file
     # to apply to the cluster
+    # WARINING: you must provide this file
     - name: app-secrets
       file: ~/data/app-secrets.yaml
-  # by default, ingress is done trough Nginx. Enable this to use Traefik instead
-  useTraefik: false
+  # ingress to use nginx|traefik. Default nginx
+  ingress: nginx
   # path for the kube config file. This allows you to address any Kubernetes cluster
   # WARNING: kubectl must be installed on your machine
   kubeConfigPath: ~/.kube/config
 ```
+
+Secrets file (here _~/data/app-secrets.yaml_) must be provided. It has to be similar
+to the following:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: iiosecrets
+type: Opaque
+data:
+  emailer_smtp_pass: <base64_string>
+  mongodb_pwd: <base64_string>
+  s3_access_key_id: <base64_string>
+  s3_secret_access_key: <base64_string>
+```
+
+To deploy the full app:
 
 ```bash
 ...

@@ -1,7 +1,7 @@
 {
   "name": "@ignitial/iio-cli",
-  "version": "2.8.0",
-  "description": "iio application & services project generator",
+  "version": "2.8.1",
+  "description": "Ignitial.io (IIO) application & services project generator",
   "main": "./src/index.js",
   "bin": {
     "iio": "./src/index.js"
@@ -15,8 +15,12 @@
     "ignitial.io",
     "generator",
     "micro-services",
+    "microservices",
     "services",
-    "iios"
+    "iios",
+    "cli",
+    "kubernetes",
+    "docker"
   ],
   "author": "Victor Andritoiu <devandrito@gmail.com>",
   "license": "MIT",
