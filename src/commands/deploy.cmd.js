@@ -4,6 +4,8 @@ const path = require('path')
 const spawn = require('child_process').spawn
 const YAML = require('yaml')
 const expandHomeDir = require('expand-home-dir')
+const txtRed = require('../utils').txtRed
+const txtOrange = require('../utils').txtOrange
 
 module.exports = function(config) {
   function proceed(action, options) {
@@ -48,7 +50,7 @@ module.exports = function(config) {
         break
       default:
         if (options.orchestrator && options.orchestrator !== '') {
-          console.log('value [' + options.orchestrator + '] for option [orchestrator] is not available')
+          console.log(txtOrange('value [' + options.orchestrator + '] for option [orchestrator] is not available'))
         }
     }
 
@@ -57,7 +59,7 @@ module.exports = function(config) {
       case 'traefik': process.env.IIOS_USE_TRAEFIK = true; break
       default:
         if (options.ingress && options.ingress !== '') {
-          console.log('value [' + options.ingress + '] for option [ingress] is not available')
+          console.log(txtOrange('value [' + options.ingress + '] for option [ingress] is not available'))
         }
     }
 
@@ -78,7 +80,7 @@ module.exports = function(config) {
           })
 
           npm.on('close', code => {
-            console.log('done with code ' + code);
+            console.log(txtOrange('deployment done.'))
           })
           break
         case 'remove':
@@ -95,7 +97,7 @@ module.exports = function(config) {
           })
 
           npm.on('close', code => {
-            console.log('done with code ' + code);
+            console.log(txtOrange('removal done.'))
           })
           break
         case 'populate':
@@ -112,12 +114,12 @@ module.exports = function(config) {
           })
 
           npm.on('close', code => {
-            console.log('done with code ' + code);
+            console.log(txtOrange('populate done.'))
           })
           break
       }
     } catch (err) {
-      console.error('error when deploying cluster', err)
+      console.error(txtRed('error when deploying cluster'))
       process.exit(1)
     }
   }

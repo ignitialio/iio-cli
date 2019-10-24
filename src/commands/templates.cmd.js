@@ -5,6 +5,8 @@ const git = require('simple-git')()
 const replace = require('replace')
 const rimraf = require('rimraf')
 const recursive = require('recursive-readdir')
+const txtRed = require('../utils').txtRed
+const txtOrange = require('../utils').txtOrange
 
 const utils = require('../utils')
 
@@ -32,20 +34,20 @@ module.exports = function(config) {
       options.lang = options.lang || 'js'
 
       if (languages.indexOf(options.lang) === -1) {
-        console.log('language ' + options.lang + ' is not supported. Exiting...')
+        console.error(txtRed('language ' + options.lang + ' is not supported. exiting...'))
         process.exit(1)
       }
 
-      console.log('selected lang: [%s]', options.lang)
+      console.log(txtOrange('selected lang: ' + options.lang))
 
-      console.log('available templates for [' + options.lang + '] language:')
+      console.log(txtOrange('available templates for [' + options.lang + '] language:'))
       for (let template in templates[options.lang]) {
         if (templates[options.lang][template].repo) {
-          console.log('\t[' + template + '] : ' + templates[options.lang][template].description)
+          console.log(txtOrange('\t[' + template + '] : ' + templates[options.lang][template].description))
         } else {
-          console.log('\t[' + template + '] variants: ')
+          console.log(txtOrange('\t[' + template + '] variants: '))
           for (let variant in templates[options.lang][template]) {
-            console.log('\t\t[' + template + ':' + variant + '] : ' + templates[options.lang][template][variant].description)
+            console.log(txtOrange('\t\t[' + template + ':' + variant + '] : ' + templates[options.lang][template][variant].description))
           }
         }
       }

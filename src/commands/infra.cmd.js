@@ -2,12 +2,13 @@ const cli = require('commander')
 const fs = require('fs')
 const path = require('path')
 const exec = require('child_process').execSync
+const txtRed = require('../utils').txtRed
+const txtOrange = require('../utils').txtOrange
 
 module.exports = function(config) {
   cli
     .command('infra <mode>')
-    .description('deploys redis, mongo and minio infrastructure (<mode> = dev|prod)')
-    .option('-k, --kubeconfig <path>', 'kubectl configuration file path to access Kubernetes cluster')
+    .description('deploy redis, mongo and minio infrastructure (<mode> = dev)')
     .option('-r, --rm', 'remove deployment')
     .option('-s, --sentinel', 'redis sentinel enabled')
     .action(function(mode, options) {
@@ -43,19 +44,16 @@ module.exports = function(config) {
           (options.sentinel ? '-sentinel' : '') + '.yml')
 
         if (options.rm) {
-          console.log('remove infra services (redis, mongo, minio)...')
-
-          console.log('try to remove services...')
+          console.log(txtOrange('removing infra services (redis, mongo, minio)...'))
 
           if (options.sentinel) {
             try {
               exec('docker stack rm infra')
             } catch (err) {
-              console.error('error: have you initialized a stack ?...', err)
+              console.error(txtRed('error: have you initialized a stack ?...'))
               process.exit(1)
             }
 
-            console.log('try to remove network...')
             try {
               exec('docker network rm infra_sentinel')
             } catch (err) {
@@ -67,36 +65,33 @@ module.exports = function(config) {
               exec('docker-compose -f ' + composeFilePath + ' stop')
               exec('docker-compose -f ' + composeFilePath + ' rm -f')
             } catch (err) {
-              console.error('error: have you installed docker-compose ?...', err)
+              console.error(txtRed('error: have you installed docker-compose ?...'))
             }
 
-            console.log('try to remove network...')
             try {
               exec('docker network rm infra')
             } catch (err) {
-              console.error('error to remove network', err)
+              console.error(txtRed('error to remove network'))
               process.exit(1)
             }
           }
         } else {
-          console.log('start infra (redis, mongo, minio) for dev purposes...')
+          console.log(txtOrange('start infra (redis, mongo, minio) for dev purposes...'))
 
           if (options.sentinel) {
-            console.log('try to create infra_sentinel docker overlay network...')
             try {
               exec('docker network create --driver overlay infra_sentinel')
             } catch (err) {
-              console.log('network exists already')
+              console.log(txtOrange('network exists already'))
             }
 
             try {
               exec('docker stack deploy --compose-file ' + composeFilePath + ' infra')
             } catch (err) {
-              console.error('error: have you initialized a docker swarm ?...', err)
+              console.error(txtRed('error: have you initialized a docker swarm ?...'))
               process.exit(1)
             }
           } else {
-            console.log('try to create infra docker bridge network...')
             try {
               exec('docker network create infra')
             } catch (err) {
@@ -106,21 +101,20 @@ module.exports = function(config) {
             try {
               exec('docker-compose -f ' + composeFilePath + ' up -d')
             } catch (err) {
-              console.error('error: have you installed docker-compose ?...', err)
+              console.error(txtRed('error: have you installed docker-compose ?...'))
               process.exit(1)
             }
           }
         }
       } else {
-        console.log('not yet implemented')
+        console.error(txtRed('not yet implemented'))
       }
 
-      console.log('done')
+      console.log(txtOrange('infra deploy done.'))
     }).on('--help', function() {
       console.log('')
-      console.log('Examples:')
+      console.log(txtOrange('Examples:'))
       console.log('');
-      console.log('  $ iio infra dev')
-      console.log('  $ iio infra --kubeconfig /home/toto/k8s/mycluster/amd64.conf prod')
+      console.log(txtOrange('  $ iio infra dev'))
     })
 }

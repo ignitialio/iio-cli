@@ -5,6 +5,8 @@ const git = require('simple-git')()
 const replace = require('replace')
 const rimraf = require('rimraf')
 const recursive = require('recursive-readdir')
+const txtRed = require('../utils').txtRed
+const txtOrange = require('../utils').txtOrange
 
 const utils = require('../utils')
 
@@ -34,11 +36,11 @@ module.exports = function(config) {
       options.lang = options.lang || 'js'
 
       if (languages.indexOf(options.lang) === -1) {
-        console.log('language ' + options.lang + ' is not supported. Exiting...')
+        console.error(txtRed('language ' + options.lang + ' is not supported. exiting...'))
         process.exit(1)
       }
 
-      console.log('selected lang: [%s]', options.lang)
+      console.log(txtOrange('selected lang: ' + options.lang))
 
       let availableBootstraps = []
       let defaultBootstraps = {}
@@ -59,7 +61,7 @@ module.exports = function(config) {
       let currentBootstrapIndex = availableBootstraps.indexOf(what)
       if (currentBootstrapIndex === -1) {
         if (!defaultBootstraps[what]) {
-          console.error('bootstrap template [' + what + '] is not supported. Exiting...')
+          console.error(txtRed('bootstrap template [' + what + '] is not supported. exiting...'))
           process.exit(1)
         }
       }
@@ -96,7 +98,7 @@ module.exports = function(config) {
           message = templates[options.lang].service.message
 
           if (!loweredName.match(/^[a-z]+$/)) {
-            console.log('service name must contain only letters from a to z or A to Z.')
+            console.error(txtRed('service name must contain only letters from a to z or A to Z'))
             utils.cleanupAndExit(loweredName)
           }
 
@@ -132,8 +134,8 @@ module.exports = function(config) {
               })
 
               rimraf(path.join(destPath, '.git'), () => {
-                console.log(message)
-                console.log('done')
+                console.log(txtOrange(message))
+                console.log(txtOrange('creation done.'))
               })
             })
           })
@@ -154,8 +156,8 @@ module.exports = function(config) {
             })
 
             rimraf(path.join(destPath, '.git'), () => {
-              console.log(message)
-              console.log('done')
+              console.log(txtOrange(message))
+              console.log(txtOrange('creation done.'))
             })
           })
           break
@@ -172,7 +174,8 @@ module.exports = function(config) {
           message = variantConfig.message
 
           if (!repo) {
-            console.error('repo name missing')
+            console.error(txtRed('repo name missing'))
+            process.exit(1)
           }
 
           destPath = path.join(options.path || destPath, name)
@@ -228,8 +231,8 @@ module.exports = function(config) {
             }
 
             rimraf(path.join(destPath, '.git'), () => {
-              console.log(message)
-              console.log('done')
+              console.log(txtOrange(message))
+              console.log(txtOrange('creation done.'))
             })
           })
       }

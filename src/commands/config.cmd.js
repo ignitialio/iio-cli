@@ -8,6 +8,8 @@ const jp = require('jsonpath')
 const _ = require('lodash')
 const expandHomeDir = require('expand-home-dir')
 const rimraf = require('rimraf').sync
+const txtRed = require('../utils').txtRed
+const txtOrange = require('../utils').txtOrange
 
 let appPackageDef
 
@@ -52,7 +54,7 @@ function updateElement(which, data) {
             // console.log(content.toString('base64'))
             result = which.replace('{{' + m + '}}', content.toString('base64'))
           } catch (err) {
-            console.error(' config file [' + url + '] is missing')
+            console.error(txtRed('config file [' + url + '] is missing'))
             process.exit(1)
           }
         } else if (m.match(/str/)) {
@@ -149,12 +151,12 @@ module.exports = function(config) {
           configFile = path.join(workingDirectory, 'k8s', 'config', 'deploy.yaml')
           break
         default:
-          console.error('[' + target + '] target not available (<target> = app|deploy|data)')
+          console.error(txtRed('[' + target + '] target not available (<target> = app|deploy|data)'))
           process.exit(1)
       }
 
       if (!fs.existsSync(configFile)) {
-        console.error(' config file [' + configFile + '] is missing')
+        console.error(txtRed('config file [' + configFile + '] is missing'))
         process.exit(1)
       }
 
@@ -163,7 +165,7 @@ module.exports = function(config) {
         config = YAML.parse(config)
         config = updateRefs(config)
       } catch (err) {
-        console.error('error when processing [' + target + '] config', err)
+        console.error(txtRed('error when processing [' + target + '] config'))
       }
 
       switch (action) {
@@ -174,7 +176,7 @@ module.exports = function(config) {
           }
           console.log(JSON.stringify(config, null, 2))
 
-          console.log('\ndone')
+          console.log(txtOrange('config display done.'))
           break
         case 'generate':
           if (config.cluster.secrets) {
@@ -248,11 +250,11 @@ module.exports = function(config) {
               }
             }
 
-            console.log('\ndone')
+            console.log(txtOrange('config generation done.'))
           })
           break
         default:
-          console.error('[' + action + '] action not available (<action> = get|generate)')
+          console.error(txtRed('[' + action + '] action not available (<action> = get|generate)'))
           process.exit(1)
       }
     })

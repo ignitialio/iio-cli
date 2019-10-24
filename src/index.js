@@ -65,9 +65,9 @@ if (fs.existsSync(appsCfgPath)) {
 }
 
 function run() {
-  console.log('-------------------------------------------------------------------------------')
-  console.log('IIOS CLI version ' + version)
-  console.log('-------------------------------------------------------------------------------')
+  console.log(txtOrange('-------------------------------------------------------------------------------'))
+  console.log(txtOrange('IIOS CLI version ' + version))
+  console.log(txtOrange('-------------------------------------------------------------------------------'))
 
   let config = {
     apps: appsConfig,
@@ -94,12 +94,12 @@ function run() {
     })
 
   if (!process.argv.slice(2).length) {
-    cli.outputHelp(make_orange)
+    cli.outputHelp(txtOrange)
   }
 
   cli.parse(process.argv)
 }
 
-function make_orange(txt) {
-  return chalk.rgb(255, 165, 0)(txt) //display the help text in red on the console
+function txtOrange(txt) {
+  return chalk.rgb(255, 165, 0)(txt) // orange text
 }

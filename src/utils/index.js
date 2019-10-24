@@ -1,6 +1,7 @@
 const fs = require('fs-extra')
 const path = require('path')
 const listDirectories = require('list-directories')
+const chalk = require('chalk')
 
 exports.cleanupAndExit = function(loweredName, servicePath) {
   console.log('creation of service ' + loweredName + ' error')
@@ -28,4 +29,12 @@ exports.renameDirs = async function (dirPath, loweredName, servicePath) {
   for (let childDirPath of childDirPaths.values()) {
     await exports.renameDirs(childDirPath, loweredName, servicePath)
   }
+}
+
+exports.txtRed = function(txt) {
+  return chalk.rgb(255, 0, 0)(txt) // red text
+}
+
+exports.txtOrange = function(txt) {
+  return chalk.rgb(255, 165, 0)(txt) // orange text
 }

@@ -1,6 +1,8 @@
 const cli = require('commander')
 const fs = require('fs-extra')
 const path = require('path')
+const txtRed = require('../utils').txtRed
+const txtOrange = require('../utils').txtOrange
 
 module.exports = function(config) {
   cli
@@ -15,7 +17,7 @@ module.exports = function(config) {
             options.dest = options.dest || name
             let destPath = path.resolve(process.cwd(), options.dest)
             if (fs.existsSync(destPath)) {
-              console.error('error: destination directory already exists')
+              console.error(txtRed('error: destination directory already exists'))
               process.exit(1)
             }
             fs.mkdirSync(destPath)
@@ -23,7 +25,7 @@ module.exports = function(config) {
             fs.copyFileSync(path.join(__dirname, '../../config/template/template.cmd.js'),
               dest)
 
-            console.log('done')
+            console.log(txtOrange('command creation done.'))
           } catch (err) {
             console.error('error to create command plugin', err)
           }
