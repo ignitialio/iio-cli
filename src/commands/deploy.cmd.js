@@ -9,8 +9,10 @@ module.exports = function(config) {
   function proceed(action, options) {
     options.ingress = options.ingress || 'nginx'
     options.orchestrator = options.orchestrator || 'k8s'
+
     let npmDeployCmdTarget = 'deploy'
     let npmRemoveCmdTarget = 'remove'
+    let npmPopulateCmdTarget = 'populate'
     let workingDirectory = path.resolve('.')
 
     if (options.workingDir) {
@@ -37,10 +39,12 @@ module.exports = function(config) {
       case 'k8s':
         npmDeployCmdTarget = 'k8s:' + npmDeployCmdTarget
         npmRemoveCmdTarget = 'k8s:' + npmRemoveCmdTarget
+        npmPopulateCmdTarget = 'k8s:' + npmPopulateCmdTarget
         break
       case 'swarm':
         npmDeployCmdTarget = 'swarm:' + npmDeployCmdTarget
         npmRemoveCmdTarget = 'swarm:' + npmRemoveCmdTarget
+        npmPopulateCmdTarget = 'swarm:' + npmPopulateCmdTarget
         break
       default:
         if (options.orchestrator && options.orchestrator !== '') {
@@ -58,41 +62,62 @@ module.exports = function(config) {
     }
 
     try {
-      if (action === 'deploy') {
-        let npm = spawn('npm', [ 'run', npmDeployCmdTarget ], {
-          cwd: workingDirectory
-        })
+      let npm
+      switch (action) {
+        case 'deploy':
+          npm = spawn('npm', [ 'run', npmDeployCmdTarget ], {
+            cwd: workingDirectory
+          })
 
-        npm.stdout.on('data', data => {
-          console.log(data.toString().slice(0, -1))
-        })
+          npm.stdout.on('data', data => {
+            console.log(data.toString().slice(0, -1))
+          })
 
-        npm.stderr.on('data', data => {
-          console.error(data.toString().slice(0, -1))
-        })
+          npm.stderr.on('data', data => {
+            console.error(data.toString().slice(0, -1))
+          })
 
-        npm.on('close', code => {
-          console.log('done with code ' + code);
-        })
-      } else {
-        let npm = spawn('npm', [ 'run', npmRemoveCmdTarget] , {
-          cwd: workingDirectory
-        })
+          npm.on('close', code => {
+            console.log('done with code ' + code);
+          })
+          break
+        case 'remove':
+          npm = spawn('npm', [ 'run', npmRemoveCmdTarget] , {
+            cwd: workingDirectory
+          })
 
-        npm.stdout.on('data', data => {
-          console.log(data.toString().slice(0, -1))
-        })
+          npm.stdout.on('data', data => {
+            console.log(data.toString().slice(0, -1))
+          })
 
-        npm.stderr.on('data', data => {
-          console.error(data.toString().slice(0, -1))
-        })
+          npm.stderr.on('data', data => {
+            console.error(data.toString().slice(0, -1))
+          })
 
-        npm.on('close', code => {
-          console.log('done with code ' + code);
-        })
+          npm.on('close', code => {
+            console.log('done with code ' + code);
+          })
+          break
+        case 'populate':
+          npm = spawn('npm', [ 'run', npmPopulateCmdTarget] , {
+            cwd: workingDirectory
+          })
+
+          npm.stdout.on('data', data => {
+            console.log(data.toString().slice(0, -1))
+          })
+
+          npm.stderr.on('data', data => {
+            console.error(data.toString().slice(0, -1))
+          })
+
+          npm.on('close', code => {
+            console.log('done with code ' + code);
+          })
+          break
       }
     } catch (err) {
-      console.error('error to deploy', err)
+      console.error('error when deploying cluster', err)
       process.exit(1)
     }
   }
@@ -117,5 +142,14 @@ module.exports = function(config) {
     .option('-i, --ingress <inressType>', 'set ingress type (nginx|traefik, default=nginx)')
     .action(function(options) {
       proceed('remove', options)
+    })
+
+  // populate
+  cli
+    .command('populate')
+    .description('populate IIO app databases')
+    .option('-w, --workingDir <path>', 'set working directory path (default=.')
+    .action(function(options) {
+      proceed('populate', options)
     })
 }

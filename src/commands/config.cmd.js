@@ -117,7 +117,7 @@ function updateRefs(config, data) {
 module.exports = function(config) {
   cli
     .command('config <target> <action>')
-    .description('manage IIO app configuration (<target> = app|deploy, <action> = get|generate)')
+    .description('manage IIO app configuration (<target> = app|deploy|data, <action> = get|generate)')
     .option('-w, --workingDir <path>', 'set working directory path (default=.')
     .action(function(target, action, options) {
       let workingDirectory = path.resolve('.')
@@ -145,8 +145,11 @@ module.exports = function(config) {
         case 'deploy':
           configFile = path.join(workingDirectory, 'k8s', 'config', 'deploy.yaml')
           break
+        case 'data':
+          configFile = path.join(workingDirectory, 'k8s', 'config', 'deploy.yaml')
+          break
         default:
-          console.error('[' + target + '] target not available (<target> = app|deploy)')
+          console.error('[' + target + '] target not available (<target> = app|deploy|data)')
           process.exit(1)
       }
 
@@ -165,6 +168,10 @@ module.exports = function(config) {
 
       switch (action) {
         case 'get':
+          if (target === 'data') {
+            console.log('data configuration cannot not be displayed for security reasons')
+            process.exit(0)
+          }
           console.log(JSON.stringify(config, null, 2))
 
           console.log('\ndone')
@@ -221,9 +228,24 @@ module.exports = function(config) {
                   console.log('\n' + path.basename(file) + ' -> error. skip file\n')
                 }
               }
+              switch (target) {
+                case 'deploy':
+                  // avoid populate file
+                  if (!path.basename(file).match(/populate/)) {
+                    fs.writeFileSync(path.join(deployPath, path.basename(file)), result, 'utf8')
 
-              console.log(path.basename(file) + ' generated')
-              fs.writeFileSync(path.join(deployPath, path.basename(file)), result, 'utf8')
+                    console.log(path.basename(file) + ' generated')
+                  }
+                  break
+                case 'data':
+                  let filter = [ '00-app-secrets.yaml', '01-redis-pv.yaml', '02-redis-deploy.yaml', 'populate.yaml']
+                  if (filter.indexOf(path.basename(file)) !== -1) {
+                    fs.writeFileSync(path.join(deployPath, path.basename(file)), result, 'utf8')
+
+                    console.log(path.basename(file) + ' generated')
+                  }
+                  break
+              }
             }
 
             console.log('\ndone')
