@@ -57,7 +57,7 @@ module.exports = function(config) {
             try {
               exec('docker network rm infra_sentinel')
             } catch (err) {
-              console.error('error to remove network', err)
+              console.error('failed to remove network', err)
               process.exit(1)
             }
           } else {
@@ -71,7 +71,7 @@ module.exports = function(config) {
             try {
               exec('docker network rm infra')
             } catch (err) {
-              console.error(txtRed('error to remove network'))
+              console.error(txtRed('failed to remove network'))
               process.exit(1)
             }
           }

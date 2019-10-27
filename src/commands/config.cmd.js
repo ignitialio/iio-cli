@@ -295,10 +295,10 @@ module.exports = function(config) {
                     break
                 }
               }
-
-              console.log(txtOrange('config generation done.'))
             })
           }
+
+          console.log(txtOrange('config generation done.'))
           break
         default:
           console.error(txtRed('[' + action + '] action not available (<action> = get|generate)'))

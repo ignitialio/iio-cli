@@ -27,7 +27,7 @@ module.exports = function(config) {
 
             console.log(txtOrange('command creation done.'))
           } catch (err) {
-            console.error('error to create command plugin', err)
+            console.error('failed to create command plugin', err)
           }
           break
         case 'add':
@@ -41,7 +41,7 @@ module.exports = function(config) {
             fs.copyFileSync(srcPath, path.join(__dirname, name + '.cmd.js'))
             console.log('done')
           } catch (err) {
-            console.error('error to add command plugin', err)
+            console.error('failed to add command plugin', err)
           }
           break
         case 'remove':
