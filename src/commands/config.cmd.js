@@ -144,6 +144,7 @@ module.exports = function(config) {
     .option('-j, --jsonpath <query>', 'used with <get> action: returns only queried defined property from configuration')
     .option('-i, --input <path>', 'input configuration directory path')
     .option('-o, --output <path>', 'output directory path for application generated configuration')
+    .option('-e, --env', 'use env templates for deploy config generation')
     .action(function(target, action, options) {
       workingDirectory = path.resolve('.')
       let configFile
@@ -276,6 +277,7 @@ module.exports = function(config) {
                   console.log('warning: skip registry credentials because data is empty')
                   continue
                 }
+
                 let data = fs.readFileSync(file, 'utf8')
                 let docs = YAML.parseAllDocuments(data)
                 let result = ''
@@ -288,13 +290,24 @@ module.exports = function(config) {
                     console.log('\n' + path.basename(file) + ' -> error. skip file\n')
                   }
                 }
+
                 switch (target) {
                   case 'deploy':
                     // avoid populate file
                     if (!path.basename(file).match(/populate/)) {
-                      fs.writeFileSync(path.join(deployPath, path.basename(file)), result, 'utf8')
+                      if (options.env) {
+                        if (!path.basename(file).match(/app-deploy-configmap/)) {
+                          fs.writeFileSync(path.join(deployPath, path.basename(file)), result, 'utf8')
 
-                      console.log(path.basename(file) + ' generated')
+                          console.log(path.basename(file) + ' generated')
+                        }
+                      } else {
+                        if (!path.basename(file).match(/app-deploy-env/)) {
+                          fs.writeFileSync(path.join(deployPath, path.basename(file)), result, 'utf8')
+
+                          console.log(path.basename(file) + ' generated')
+                        }
+                      }
                     }
                     break
                   case 'data':
