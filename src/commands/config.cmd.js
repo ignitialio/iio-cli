@@ -142,6 +142,7 @@ module.exports = function(config) {
     .description('manage IIO app configuration (<target> = app|deploy|data, <action> = get|generate)')
     .option('-w, --workingDir <path>', 'set working directory path (default=.')
     .option('-j, --jsonpath <query>', 'used with <get> action: returns only queried defined property from configuration')
+    .option('-i, --input <path>', 'input configuration directory path')
     .option('-o, --output <path>', 'output directory path for application generated configuration')
     .action(function(target, action, options) {
       workingDirectory = path.resolve('.')
@@ -162,17 +163,21 @@ module.exports = function(config) {
         fs.mkdirSync(deployPath)
       }
 
+      if (options.input) {
+        configDirectory = path.resolve(workingDirectory, options.input)
+      }
+
       switch (target) {
         case 'app':
-          configDirectory = path.join(workingDirectory, 'config')
+          configDirectory = configDirectory || path.join(workingDirectory, 'config')
           configFile = path.join(configDirectory, 'app.yaml')
           break
         case 'deploy':
-          configDirectory = path.join(workingDirectory, 'k8s', 'config')
+          configDirectory = configDirectory || path.join(workingDirectory, 'k8s', 'config')
           configFile = path.join(configDirectory, 'deploy.yaml')
           break
         case 'data':
-          configDirectory = path.join(workingDirectory, 'k8s', 'config')
+          configDirectory = configDirectory || path.join(workingDirectory, 'k8s', 'config')
           configFile = path.join(configDirectory, 'deploy.yaml')
           break
         default:
