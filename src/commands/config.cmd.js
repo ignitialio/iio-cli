@@ -142,6 +142,7 @@ module.exports = function(config) {
     .description('manage IIO app configuration (<target> = app|deploy|data, <action> = get|generate)')
     .option('-w, --workingDir <path>', 'set working directory path (default=.')
     .option('-j, --jsonpath <query>', 'used with <get> action: returns only queried defined property from configuration')
+    .option('-o, --output <path>', 'output directory path for application generated configuration')
     .action(function(target, action, options) {
       workingDirectory = path.resolve('.')
       let configFile
@@ -214,7 +215,13 @@ module.exports = function(config) {
         case 'generate':
           if (target === 'app') {
             try {
-              let destinationPath = path.join(workingDirectory, 'server', 'config', 'generated')
+              let destinationPath
+              if (options.output) {
+                destinationPath = path.resolve(workingDirectory, options.output)
+              } else {
+                destinationPath = path.join(workingDirectory, 'server', 'config', 'generated')
+              }
+
               if (!fs.existsSync(destinationPath)) {
                 fs.mkdirSync(destinationPath)
               }
