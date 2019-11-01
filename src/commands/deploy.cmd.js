@@ -80,7 +80,7 @@ module.exports = function(config) {
           })
 
           npm.on('close', code => {
-            console.log(txtOrange('deployment done.'))
+            console.log('deployment done.')
           })
           break
         case 'remove':
@@ -97,7 +97,7 @@ module.exports = function(config) {
           })
 
           npm.on('close', code => {
-            console.log(txtOrange('removal done.'))
+            console.log('removal done.')
           })
           break
         case 'populate':
@@ -114,7 +114,7 @@ module.exports = function(config) {
           })
 
           npm.on('close', code => {
-            console.log(txtOrange('populate done.'))
+            console.log('populate done.')
           })
           break
       }

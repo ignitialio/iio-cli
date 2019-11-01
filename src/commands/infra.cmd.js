@@ -113,8 +113,8 @@ module.exports = function(config) {
       console.log(txtOrange('infra deploy done.'))
     }).on('--help', function() {
       console.log('')
-      console.log(txtOrange('Examples:'))
+      console.log('Examples:')
       console.log('');
-      console.log(txtOrange('  $ iio infra dev'))
+      console.log('  $ iio infra dev')
     })
 }

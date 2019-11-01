@@ -1,17 +1,6 @@
 templates:
   js:
     app:
-      experimental:
-        description: Experimental light weight web application template
-        repo: https://github.com/ignitialio/iio-app-template.git
-        textReplacements:
-          iioat: lowerCaseAppName
-          "@ignitial/iio-app-template": lowerCaseAppName
-          IgnitialIO: appName
-          ignitialio: lowerCaseAppName
-        fileReplacements:
-          ignitialio: lowerCaseAppName
-        message: Your experimental micro-services based application is ready
       material:
         default: true
         description: Vuetify based web application template
@@ -21,13 +10,24 @@ templates:
           "@ignitial/iio-app-material-template": lowerCaseAppName
           IgnitialIO: appName
           ignitialio: lowerCaseAppName
-        fileReplacements:
+        filenameReplacements:
           ignitialio: lowerCaseAppName
         message: Your micro-services based application is ready
     service:
-      repo: https://github.com/ignitialio/iio-svc-template.git
-      description: IIOS service template
-      message: Your Javascript Ignitial.io service is ready
+      standard:
+        default: true
+        description: IIO service template
+        namingRules: ^[a-z]+$
+        nameSuffix: -service
+        repo: https://github.com/ignitialio/iio-svc-template.git
+        textReplacements:
+          Iiost: upperCaseAppName
+          iiost: lowerCaseAppName
+          "@ignitial/iio-svc": lowerCaseAppName
+          ignitialio: lowerCaseAppName
+        filenameReplacements:
+          iiost: lowerCaseAppName
+        message: Your Javascript Ignitial.io service is ready
     web:
       material:
         default: true
@@ -35,7 +35,7 @@ templates:
         repo: https://github.com/ignitialio/iio-web-material-template.git
         textReplacements:
           iioat: lowerCaseAppName
-          "@ignitial/iio-app-material-template": lowerCaseAppName
+          "@ignitial/iio-web-material-template": lowerCaseAppName
           IgnitialIO: appName
           ignitialio: lowerCaseAppName
         fileReplacements:

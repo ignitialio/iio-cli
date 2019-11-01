@@ -216,7 +216,7 @@ module.exports = function(config) {
             console.log(JSON.stringify(config, null, 2))
           }
 
-          console.log(txtOrange('config display done.'))
+          console.log('config display done.')
           break
         case 'generate':
           if (target === 'app') {
@@ -323,7 +323,7 @@ module.exports = function(config) {
             })
           }
 
-          console.log(txtOrange('config generation done.'))
+          console.log('config generation done.')
           break
         default:
           console.error(txtRed('[' + action + '] action not available (<action> = get|generate)'))

@@ -3,10 +3,10 @@ const fs = require('fs-extra')
 const path = require('path')
 const git = require('simple-git')()
 const replace = require('replace')
-const rimraf = require('rimraf')
 const recursive = require('recursive-readdir')
 const txtRed = require('../utils').txtRed
 const txtOrange = require('../utils').txtOrange
+const rimraf = require('../utils').rimraf
 
 const utils = require('../utils')
 
@@ -40,9 +40,11 @@ module.exports = function(config) {
         process.exit(1)
       }
 
-      console.log(txtOrange('selected lang: ' + options.lang))
+      console.log(txtOrange('language: ' + options.lang))
 
       let availableBootstraps = []
+      // reference default variant when variant option missing
+      // ex: app === app:material since material is default
       let defaultBootstraps = {}
 
       for (let bs in templates[options.lang]) {
@@ -92,75 +94,8 @@ module.exports = function(config) {
       }
 
       switch (what) {
-        case 'service':
-          destPath = path.join(options.path || destPath, name + '-service')
-          repo = templates[options.lang].service.repo
-          message = templates[options.lang].service.message
-
-          if (!loweredName.match(/^[a-z]+$/)) {
-            console.error(txtRed('service name must contain only letters from a to z or A to Z'))
-            utils.cleanupAndExit(loweredName)
-          }
-
-          git.clone(repo, destPath, cloneOpts, async () => {
-            await utils.renameDirs(destPath, loweredName)
-
-            recursive(destPath, (err, files) => {
-              // `files` is an array of absolute file paths
-              for (let file of files) {
-                if (path.basename(file).match('Iiost')) {
-                  fs.move(file, file.replace('Iiost', upperedName))
-                }
-
-                if (path.basename(file).match('iiost')) {
-                  fs.move(file, file.replace('iiost', loweredName))
-                }
-              }
-
-              replace({
-                regex: 'iiost',
-                replacement: loweredName,
-                paths: [ destPath ],
-                recursive: true,
-                silent: true,
-              })
-
-              replace({
-                regex: 'Iiost',
-                replacement: upperedName,
-                paths: [ destPath ],
-                recursive: true,
-                silent: true,
-              })
-
-              rimraf(path.join(destPath, '.git'), () => {
-                console.log(txtOrange(message))
-                console.log(txtOrange('creation done.'))
-              })
-            })
-          })
-          break
-        case 'desktop':
-          destPath = path.join(options.path || destPath, name)
-
-          repo = templates[options.lang].desktop.repo
-          message = templates[options.lang].desktop.message
-
-          git.clone(repo, destPath, cloneOpts, () => {
-            replace({
-              regex: 'iioeat',
-              replacement: loweredName,
-              paths: [ destPath ],
-              recursive: true,
-              silent: true,
-            })
-
-            rimraf(path.join(destPath, '.git'), () => {
-              console.log(txtOrange(message))
-              console.log(txtOrange('creation done.'))
-            })
-          })
-          break
+        // future possible specific cases: for now, everything is done thanks to
+        // the YAML config and, then, only default case
         default:
           let variantConfig
 
@@ -173,37 +108,50 @@ module.exports = function(config) {
           repo = variantConfig.repo
           message = variantConfig.message
 
+          if (variantConfig.namingRules && !loweredName.match(new RegExp(variantConfig.namingRules))) {
+            console.error(txtRed(what + ' name must match /' + variantConfig.namingRules + '/'))
+            utils.cleanupAndExit(loweredName)
+          }
+
           if (!repo) {
             console.error(txtRed('repo name missing'))
             process.exit(1)
           }
 
-          destPath = path.join(options.path || destPath, name)
+          destPath = path.join(options.path || destPath,
+            name + (variantConfig.nameSuffix || ''))
 
           let textReplacements = variantConfig.textReplacements
 
-          git.clone(repo, destPath, cloneOpts, () => {
-            // `files` is an array of absolute file paths
-            if (variantConfig.filanameReplacements) {
-              for (let filename in variantConfig.filanameReplacements) {
-                if (path.basename(file).match(filename)) {
-                  let newFilename
-                  switch (variantConfig.filanameReplacements[filename]) {
-                    case 'lowerCaseAppName':
-                      newFilename = loweredName
-                      break
-                    case 'appName':
-                      newFilename = name
-                      break
-                    case 'upperCaseAppName':
-                      newFilename = upperedName
-                    default:
-                      newFilename = name
-                  }
+          git.clone(repo, destPath, cloneOpts, async () => {
+            await rimraf(path.join(destPath, '.git'))
 
-                  fs.move(file, file.replace(filename, newFilename))
+            // `files` is an array of absolute file paths
+            if (variantConfig.filenameReplacements) {
+              recursive(destPath, (err, files) => {
+                // `files` is an array of absolute file paths
+                for (let file of files) {
+                  for (let filenameMatch in variantConfig.filenameReplacements) {
+                    if (path.basename(file).match(filenameMatch)) {
+                      let newFilename
+                      switch (variantConfig.filenameReplacements[filenameMatch]) {
+                        case 'lowerCaseAppName':
+                          newFilename = loweredName
+                          break
+                        case 'appName':
+                          newFilename = name
+                          break
+                        case 'upperCaseAppName':
+                          newFilename = upperedName
+                        default:
+                          newFilename = name
+                      }
+
+                      fs.moveSync(file, file.replace(filenameMatch, newFilename))
+                    }
+                  }
                 }
-              }
+              })
             }
 
             for (let replacement in textReplacements) {
@@ -230,10 +178,8 @@ module.exports = function(config) {
               })
             }
 
-            rimraf(path.join(destPath, '.git'), () => {
-              console.log(txtOrange(message))
-              console.log(txtOrange('creation done.'))
-            })
+            console.log(txtOrange(message))
+            console.log('creation done.')
           })
       }
     })

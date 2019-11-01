@@ -25,7 +25,7 @@ module.exports = function(config) {
             fs.copyFileSync(path.join(__dirname, '../../config/template/template.cmd.js'),
               dest)
 
-            console.log(txtOrange('command creation done.'))
+            console.log('command creation done.')
           } catch (err) {
             console.error('failed to create command plugin', err)
           }

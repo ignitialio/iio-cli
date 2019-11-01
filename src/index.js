@@ -40,7 +40,7 @@ if (fs.existsSync(appsCfgPath)) {
   if (appsConfig.version !== version) {
     readline.question('Keep existing configuration (Y/n): ', answer => {
       if (answer.toLowerCase() === 'n') {
-        console.log('current configuration will be overwritten')
+        console.log(txtOrange('current configuration will be overwritten'))
         fs.unlinkSync(appsCfgPath)
         newAppsConfig.version = version
         fs.writeFileSync(appsCfgPath, yaml.stringify(newAppsConfig), 'utf8')
@@ -65,9 +65,9 @@ if (fs.existsSync(appsCfgPath)) {
 }
 
 function run() {
-  console.log(txtOrange('-------------------------------------------------------------------------------'))
-  console.log(txtOrange('IIOS CLI version ' + version))
-  console.log(txtOrange('-------------------------------------------------------------------------------'))
+  console.log('-------------------------------------------------------------------------------')
+  console.log('IIOS CLI version ' + version)
+  console.log('-------------------------------------------------------------------------------')
 
   let config = {
     apps: appsConfig,
@@ -94,7 +94,7 @@ function run() {
     })
 
   if (!process.argv.slice(2).length) {
-    cli.outputHelp(txtOrange)
+    cli.outputHelp()
   }
 
   cli.parse(process.argv)

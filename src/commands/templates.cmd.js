@@ -38,16 +38,16 @@ module.exports = function(config) {
         process.exit(1)
       }
 
-      console.log(txtOrange('selected lang: ' + options.lang))
+      console.log(txtOrange('language: ' + options.lang))
 
-      console.log(txtOrange('available templates for [' + options.lang + '] language:'))
+      console.log('available templates for [' + options.lang + '] language:')
       for (let template in templates[options.lang]) {
         if (templates[options.lang][template].repo) {
-          console.log(txtOrange('\t[' + template + '] : ' + templates[options.lang][template].description))
+          console.log('\t[' + template + '] : ' + templates[options.lang][template].description)
         } else {
-          console.log(txtOrange('\t[' + template + '] variants: '))
+          console.log('\t[' + template + '] variants: ')
           for (let variant in templates[options.lang][template]) {
-            console.log(txtOrange('\t\t[' + template + ':' + variant + '] : ' + templates[options.lang][template][variant].description))
+            console.log('\t\t[' + template + ':' + variant + '] : ' + templates[options.lang][template][variant].description)
           }
         }
       }

@@ -2,6 +2,19 @@ const fs = require('fs-extra')
 const path = require('path')
 const listDirectories = require('list-directories')
 const chalk = require('chalk')
+const rimraf = require('rimraf')
+
+exports.rimraf = function(path) {
+  return new Promise((resolve, reject) => {
+    rimraf(path, err => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve()
+      }
+    })
+  })
+}
 
 exports.cleanupAndExit = function(loweredName, servicePath) {
   console.log('creation of service ' + loweredName + ' error')
