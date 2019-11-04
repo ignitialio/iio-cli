@@ -3,8 +3,7 @@
 Deploy micro-services based cluster with web application front-end in minutes and 3 lines
 of shell commands:  
 
-[![asciicast](https://asciinema.org/a/HCCJ3KFo5DOqSdPlYw929WzKf.svg)](https://asciinema.org/a/HCCJ3KFo5DOqSdPlYw929WzKf)
-
+[![asciicast](https://asciinema.org/a/0lgSjc7qy526Mgqj6DUTmSSWx.svg)](https://asciinema.org/a/0lgSjc7qy526Mgqj6DUTmSSWx)
 
 ## Install
 
