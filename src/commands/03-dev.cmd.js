@@ -7,12 +7,13 @@ const txtOrange = require('../utils').txtOrange
 
 module.exports = function(config) {
   cli
-    .command('infra <mode>')
-    .description('deploy redis, mongo and minio infrastructure (<mode> = dev) ' + txtRed('[DEPRECATED]'))
-    .option('-r, --rm', 'remove deployment')
+    .command('dev <action> [what]')
+    .description('manage dev local cluster ([what]=infra) \
+      \n\t\t\t\t\t<deploy> deploy Docker containers \
+      \n\t\t\t\t\t<remove> remove Docker containers')
     .option('-s, --sentinel', 'redis sentinel enabled')
-    .action(function(mode, options) {
-      if (mode === 'dev') {
+    .action(function(action, what, options) {
+      if (what === 'infra' || !what) {
         let infraPath = path.join(config.iioFolderPath, 'infra')
         let minioPath = path.join(infraPath, 'minio')
         let minioConfigPath = path.join(minioPath, 'config')
@@ -43,7 +44,7 @@ module.exports = function(config) {
         let composeFilePath = path.join(__dirname, '../../config/infra/docker-compose' +
           (options.sentinel ? '-sentinel' : '') + '.yml')
 
-        if (options.rm) {
+        if (action === 'remove') {
           console.log(txtOrange('removing infra services (redis, mongo, minio)...'))
 
           if (options.sentinel) {
@@ -75,7 +76,7 @@ module.exports = function(config) {
               process.exit(1)
             }
           }
-        } else {
+        } else if (action === 'deploy') {
           console.log(txtOrange('start infra (redis, mongo, minio) for dev purposes...'))
 
           if (options.sentinel) {
@@ -105,6 +106,8 @@ module.exports = function(config) {
               process.exit(1)
             }
           }
+        } else {
+          console.log(txtOrange('action [%s] not available'), action)
         }
       } else {
         console.error(txtRed('not yet implemented'))

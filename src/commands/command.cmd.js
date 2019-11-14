@@ -7,7 +7,10 @@ const txtOrange = require('../utils').txtOrange
 module.exports = function(config) {
   cli
     .command('command <action> <name>')
-    .description('create command from template to <path>, add or remove commands from <path> (<action> = create|add|remove) ')
+    .description('CLI tool commands management\
+      \n\t\t\t\t\t<create> botstrap command source code \
+      \n\t\t\t\t\t<add> add command to IIO CLI tool \
+      \n\t\t\t\t\t<remove> remove command from IIO CLI tool')
     .option('-d, --dest <path>', 'set destination directory path for creation command (default: ./<name>)')
     .option('-s, --src <path>', 'set source directory path for add command (default: ./<name>)')
     .action(function(action, name, options) {

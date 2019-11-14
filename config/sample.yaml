@@ -1,3 +1,5 @@
+referenceLib:
+  endpoint: https://lib.ignitial.io
 templates:
   js:
     app:
@@ -28,19 +30,6 @@ templates:
         filenameReplacements:
           iiost: lowerCaseAppName
         message: Your Javascript Ignitial.io service is ready
-    web:
-      material:
-        default: true
-        description: Vuetify based site application template
-        repo: https://github.com/ignitialio/iio-web-material-template.git
-        textReplacements:
-          iioat: lowerCaseAppName
-          "@ignitial/iio-web-material-template": lowerCaseAppName
-          IgnitialIO: appName
-          ignitialio: lowerCaseAppName
-        fileReplacements:
-          ignitialio: lowerCaseAppName
-        message: Your micro-services based web site is ready
   py:
     service:
       repo: https://gitlab.com/iio-core/iio-py-svc-template.git

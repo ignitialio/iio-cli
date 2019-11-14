@@ -139,7 +139,10 @@ function updateRefs(config, data) {
 module.exports = function(config) {
   cli
     .command('config <target> <action>')
-    .description('manage IIO app configuration (<target> = app|deploy|data, <action> = get|generate)')
+    .description('manage (<action>=get|generate) \
+      \n\t\t\t\t\t<app> application configuration \
+      \n\t\t\t\t\t<deploy> deploy configuration \
+      \n\t\t\t\t\t<data> data configuration')
     .option('-w, --workingDir <path>', 'set working directory path (default=.')
     .option('-j, --jsonpath <query>', 'used with <get> action: returns only queried defined property from configuration')
     .option('-i, --input <path>', 'input configuration directory path')

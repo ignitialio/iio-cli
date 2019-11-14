@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
 const cli = require('commander')
-const chalk = require('chalk')
 const fs = require('fs-extra')
-const yaml = require('yaml')
 const path = require('path')
+const yaml = require('yaml')
+
+const txtOrange = require('./utils').txtOrange
 
 let packageDef = fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8')
 let version = JSON.parse(packageDef).version
@@ -65,9 +66,7 @@ if (fs.existsSync(appsCfgPath)) {
 }
 
 function run() {
-  console.log('-------------------------------------------------------------------------------')
-  console.log('IIOS CLI version ' + version)
-  console.log('-------------------------------------------------------------------------------')
+  console.log('IIOS CLI version [' + version + ']')
 
   let config = {
     apps: appsConfig,
@@ -98,8 +97,4 @@ function run() {
   }
 
   cli.parse(process.argv)
-}
-
-function txtOrange(txt) {
-  return chalk.rgb(255, 165, 0)(txt) // orange text
 }

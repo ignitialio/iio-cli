@@ -28,7 +28,7 @@ module.exports = function(config) {
 
   cli
     .command('templates')
-    .description('list available templates to use with [create] for a given language')
+    .description('list available templates for a given language')
     .option('-l, --lang <language>', 'set programming language: py, js (default: js)')
     .action(function(options) {
       options.lang = options.lang || 'js'
