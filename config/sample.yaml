@@ -26,7 +26,6 @@ templates:
           Iiost: upperCaseAppName
           iiost: lowerCaseAppName
           "@ignitial/iio-svc": lowerCaseAppName
-          ignitialio: lowerCaseAppName
         filenameReplacements:
           iiost: lowerCaseAppName
           Iiost: upperCaseAppName
