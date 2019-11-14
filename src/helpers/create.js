@@ -135,6 +135,7 @@ module.exports = function(config, what, name, options) {
                       break
                     case 'upperCaseAppName':
                       newFilename = upperedName
+                      break
                     default:
                       newFilename = name
                   }
@@ -157,6 +158,7 @@ module.exports = function(config, what, name, options) {
               break
             case 'upperCaseAppName':
               replType = upperedName
+              break
             default:
               replType = name
           }

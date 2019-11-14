@@ -29,6 +29,7 @@ templates:
           ignitialio: lowerCaseAppName
         filenameReplacements:
           iiost: lowerCaseAppName
+          Iiost: upperCaseAppName
         message: Your Javascript Ignitial.io service is ready
   py:
     service:
