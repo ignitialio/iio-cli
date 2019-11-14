@@ -20,7 +20,8 @@
     "iios",
     "cli",
     "kubernetes",
-    "docker"
+    "docker",
+    "bootstrap"
   ],
   "author": "Victor Andritoiu <devandrito@gmail.com>",
   "license": "MIT",
@@ -28,10 +29,13 @@
     "chalk": "^2.4.2",
     "commander": "^2.20.3",
     "expand-home-dir": "0.0.3",
+    "form-data": "^3.0.0",
     "fs-extra": "^3.0.1",
+    "got": "^9.6.0",
     "jsonpath": "^1.0.2",
     "list-directories": "^1.1.0",
     "lodash": "^4.17.15",
+    "readline-sync": "^1.4.10",
     "recursive-readdir": "^2.2.1",
     "replace": "^1.1.1",
     "rimraf": "^2.7.1",

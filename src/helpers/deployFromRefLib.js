@@ -1,4 +1,5 @@
 
-module.exports = function(config, what, name, options) {
 
+module.exports = function(config, action, name, options) {
+  console.log(config.apps.referenceLib.endpoint)
 }

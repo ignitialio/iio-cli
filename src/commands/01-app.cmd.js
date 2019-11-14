@@ -35,7 +35,7 @@ module.exports = function(config) {
         case 'deploy':
           if (name) {
             console.log('[name] provided, then deploy from reference library')
-            deployFromRefLib('deploy', options)
+            deployFromRefLib(config, 'deploy', name, options)
           } else {
             console.log('deploy from local Git repository')
             deploy('deploy', options)
@@ -44,7 +44,7 @@ module.exports = function(config) {
         case 'remove':
           if (name) {
             console.log('[name] provided, then remove by name')
-            deployFromRefLib('remove', options)
+            deployFromRefLib(config, 'remove', name, options)
           } else {
             console.log('remove using local Git repository receipes')
             deploy('remove', options)

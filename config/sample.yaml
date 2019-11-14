@@ -1,5 +1,5 @@
 referenceLib:
-  endpoint: https://lib.ignitial.io
+  endpoint: https://192.168.1.131
 templates:
   js:
     app:

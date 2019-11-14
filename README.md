@@ -5,6 +5,9 @@ of shell commands:
 
 [![asciicast](https://asciinema.org/a/0lgSjc7qy526Mgqj6DUTmSSWx.svg)](https://asciinema.org/a/0lgSjc7qy526Mgqj6DUTmSSWx)
 
+> __WARNING__: use _iio app create <name>_ instead of _iio create app <name>_ which
+> is deprecated and will be removed in the future
+
 ## Install
 
 ```bash
@@ -30,7 +33,7 @@ iio
 ### Create a new Ignitial.io app from scratch
 
 ```bash
-iio create app myUberApp
+iio app create myUberApp
 ...
 ```  
 
@@ -140,19 +143,19 @@ To deploy the full app:
 ...
 # cd to app folder or use -w option to define working directory
 cd myUberApp
-iio deploy
+iio app deploy
 ```
 
 ### Delete exsiting deployment
 
 ```bash
 # you must be in the app folder or use -w option to define working directory
-iio remove
+iio app remove
 ```
 
 ### Create a new Ignitial.io service from scratch
 
 ```bash
-iio create service myUberService
+iio service create myUberService
 ...
 ```  

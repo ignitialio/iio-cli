@@ -21,7 +21,7 @@ let appsConfig
 const iioFolderPath = process.env.IIOS_CLI_CFG_PATH ||
   path.join('/home', process.env.USER, '.iio')
 
-const appsCfgPath = process.env.IIOS_CLI_CFG_PATH ||
+const appsCfgPath = process.env.IIOS_CLI_CFG_FILE ||
   path.join(iioFolderPath, 'apps-config.yml')
 
 if (!fs.existsSync(iioFolderPath)) {
@@ -70,7 +70,8 @@ function run() {
 
   let config = {
     apps: appsConfig,
-    iioFolderPath: iioFolderPath
+    iioFolderPath: iioFolderPath,
+    configFilePath: appsCfgPath
   }
 
   cli
