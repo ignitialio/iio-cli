@@ -19,7 +19,7 @@ templates:
       standard:
         default: true
         description: IIO service template
-        namingRules: ^[a-z]+$
+        namingRules: [a-z][a-z0-9]*
         nameSuffix: -service
         repo: https://github.com/ignitialio/iio-svc-template.git
         textReplacements:
